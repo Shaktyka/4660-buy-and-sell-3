@@ -1,7 +1,7 @@
 # Учебный проект «Куплю. Продам» [![Build status][travis-image]][travis-url]
 
 * Студент: [Елена Петренко](https://up.htmlacademy.ru/nodejs/3/user/4660).
-* Наставник: `Неизвестно`.
+* Наставник: [Вадим Шевяков](https://htmlacademy.ru/profile/id574589).
 
 ---
 
