@@ -1,6 +1,6 @@
 'use strict';
 
-module.export = {
+module.exports = {
   name: `--help`,
   run() {
     const helpText = `

@@ -2,7 +2,7 @@
 
 const packageJsonFile = require(`../../../package.json`);
 
-module.export = {
+module.exports = {
   name: `--version`,
   run() {
     const version = packageJsonFile.version;

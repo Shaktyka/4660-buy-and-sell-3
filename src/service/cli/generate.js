@@ -64,7 +64,7 @@ let offers = [];
 
 // Генерация ссылки на изображение
 const getPictureFileName = (integer) => {
-  integer = integer.length === 1 ? `0${integer}` : integer;
+  integer = String(integer).length === 1 ? `0${integer}` : integer;
   return `item${integer}.jpg`;
 };
 
@@ -73,7 +73,7 @@ const generateOffer = () => {
   return {
     title: TITLES[getRandomInt(0, TITLES.length - 1)],
     picture: getPictureFileName(getRandomInt(PictureRestrict.min, PictureRestrict.max)),
-    description: [DESCRIPTIONS[getRandomInt(0, DESCRIPTIONS.length - 1)]],
+    description: DESCRIPTIONS[getRandomInt(0, DESCRIPTIONS.length - 1)],
     type: Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)],
     sum: getRandomInt(PriceRestrict.min, PriceRestrict.max),
     category: shuffleArray(CATEGORIES).slice(0, getRandomInt(1, CATEGORIES.length - 1))
