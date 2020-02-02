@@ -1,7 +1,5 @@
 'use strict';
 
-// const {cli} = require(`./src/service.cli`);
-
 const help = require(`./help`);
 const generate = require(`./generate`);
 const version = require(`./version`);

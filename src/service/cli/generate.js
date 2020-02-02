@@ -73,10 +73,10 @@ const generateOffer = () => {
   return {
     title: TITLES[getRandomInt(0, TITLES.length - 1)],
     picture: getPictureFileName(getRandomInt(PictureRestrict.min, PictureRestrict.max)),
-    description: DESCRIPTIONS[getRandomInt(0, DESCRIPTIONS.length - 1)],
+    description: shuffleArray(DESCRIPTIONS).slice(0, getRandomInt(1, 4)).join(' '),
     type: Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)],
     sum: getRandomInt(PriceRestrict.min, PriceRestrict.max),
-    category: shuffleArray(CATEGORIES).slice(0, getRandomInt(1, CATEGORIES.length - 1))
+    category: shuffleArray(CATEGORIES).slice(0, getRandomInt(1, 3))
   };
 };
 
