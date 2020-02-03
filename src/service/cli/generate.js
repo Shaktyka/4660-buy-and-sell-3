@@ -1,5 +1,6 @@
 'use strict';
 
+const chalk = require(`chalk`);
 const {getRandomInt, shuffleArray} = require(`../../utils`);
 
 // Специфичный код, необходимый для выполнения команды
@@ -99,9 +100,9 @@ module.exports = {
 
     fs.writeFile(FILE_NAME, offersInJSON, (err) => {
       if (err) {
-        return console.error(`Can't write data to file...`);
+        return console.error(chalk.red(`Can't write data to file...`));
       }
-      return console.info(`Operation success. File created.`);
+      return console.info(chalk.green(`Operation success. File created.`));
     });
   }
 };

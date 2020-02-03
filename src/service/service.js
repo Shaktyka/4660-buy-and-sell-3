@@ -1,5 +1,6 @@
 'use strict';
 
+const chalk = require(`chalk`);
 const {Cli} = require(`./cli`);
 
 const {
@@ -20,7 +21,7 @@ if (userArguments.length === 0 || !Cli[userCommand[0]]) {
 }
 
 if (offersAmount > OFFERS_AMOUNT_MAX) {
-  console.info(Message.overhead);
+  console.info(chalk.red(Message.overhead));
   process.exit(ExitCode.error);
 }
 
