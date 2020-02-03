@@ -45,6 +45,11 @@ const CATEGORIES = [
   `Журналы`
 ];
 
+const ResultWriteMessage = {
+  SUCCESS: `Operation success. File created.`,
+  ERROR: `Can't write data to file...`
+};
+
 const OfferType = {
   OFFER: `offer`,
   SALE: `sale`,
@@ -78,7 +83,7 @@ const generateOffer = () => {
   return {
     title: TITLES[getRandomInt(0, TITLES.length - 1)],
     picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
-    description: shuffleArray(DESCRIPTIONS).slice(0, getRandomInt(1, 4)).join(' '),
+    description: shuffleArray(DESCRIPTIONS).slice(0, getRandomInt(1, 4)).join(` `),
     type: getTypeOffer(),
     sum: getRandomInt(PriceRestrict.MIN, PriceRestrict.MAX),
     category: shuffleArray(CATEGORIES).slice(0, getRandomInt(1, 3))
@@ -95,18 +100,18 @@ const generateOffers = (amount) => {
 
 module.exports = {
   name: `--generate`,
-  run(args) {
-    const fs = require(`fs`);
+  async run(args) {
+    const fs = require(`fs`).promises;
 
     const [offersCount] = args;
     const amountOffers = Number.parseInt(offersCount, 10) || DEFAULT_AMOUNT;
     const offersInJSON = JSON.stringify(generateOffers(amountOffers));
 
-    fs.writeFile(FILE_NAME, offersInJSON, (err) => {
-      if (err) {
-        return console.error(chalk.red(`Can't write data to file...`));
-      }
-      return console.info(chalk.green(`Operation success. File created.`));
-    });
+    try {
+      await fs.writeFile(FILE_NAME, offersInJSON);
+      console.info(chalk.green(ResultWriteMessage.SUCCESS));
+    } catch (err) {
+      console.error(chalk.red(ResultWriteMessage.ERROR));
+    }
   }
 };
