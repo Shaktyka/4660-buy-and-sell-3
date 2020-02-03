@@ -3,7 +3,6 @@
 const chalk = require(`chalk`);
 const {getRandomInt, shuffleArray} = require(`../../utils`);
 
-// Специфичный код, необходимый для выполнения команды
 const DEFAULT_AMOUNT = 1;
 const FILE_NAME = `mocks.json`;
 
@@ -47,36 +46,41 @@ const CATEGORIES = [
 ];
 
 const OfferType = {
-  offer: `offer`,
-  sale: `sale`,
+  OFFER: `offer`,
+  SALE: `sale`,
 };
 
 const PriceRestrict = {
-  min: 1000,
-  max: 100000,
+  MIN: 1000,
+  MAX: 100000,
 };
 
 const PictureRestrict = {
-  min: 1,
-  max: 16,
+  MIN: 1,
+  MAX: 16,
 };
 
 let offers = [];
 
 // Генерация ссылки на изображение
 const getPictureFileName = (integer) => {
-  integer = String(integer).length === 1 ? `0${integer}` : integer;
+  integer = integer < 10 ? `0${integer}` : integer;
   return `item${integer}.jpg`;
+};
+
+// Получение типа объявления
+const getTypeOffer = () => {
+  return Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)].toLowerCase();
 };
 
 // Генерация одного объявления
 const generateOffer = () => {
   return {
     title: TITLES[getRandomInt(0, TITLES.length - 1)],
-    picture: getPictureFileName(getRandomInt(PictureRestrict.min, PictureRestrict.max)),
+    picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
     description: shuffleArray(DESCRIPTIONS).slice(0, getRandomInt(1, 4)).join(' '),
-    type: Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)],
-    sum: getRandomInt(PriceRestrict.min, PriceRestrict.max),
+    type: getTypeOffer(),
+    sum: getRandomInt(PriceRestrict.MIN, PriceRestrict.MAX),
     category: shuffleArray(CATEGORIES).slice(0, getRandomInt(1, 3))
   };
 };

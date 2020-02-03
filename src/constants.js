@@ -5,12 +5,12 @@ const USER_ARGV_INDEX = 1;
 const OFFERS_AMOUNT_MAX = 1000;
 
 const Message = {
-  overhead: `Не больше 1000 объявлений`
+  OVERHEAD: `Не больше 1000 объявлений`
 };
 
 const ExitCode = {
-  success: 0,
-  error: 1
+  SUCCESS: 0,
+  ERROR: 1
 };
 
 module.exports = {
