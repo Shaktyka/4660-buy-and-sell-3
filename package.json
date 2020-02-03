@@ -1,5 +1,5 @@
 {
-  "name": "buy-and-sell-4660",
+  "name": "buy-and-sell",
   "version": "1.0.0",
   "description": "Куплю. Продам",
   "main": "./src/service/service.js",
