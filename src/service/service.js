@@ -1,7 +1,7 @@
 'use strict';
 
-const chalk = require(`chalk`);
 const {Cli} = require(`./cli`);
+const log = require(`../paint-log.js`).log;
 
 const {
   DEFAULT_COMMAND,
@@ -21,7 +21,7 @@ if (userArguments.length === 0 || !Cli[userCommand[0]]) {
 }
 
 if (offersAmount > OFFERS_AMOUNT_MAX) {
-  console.info(chalk.red(Message.OVERHEAD));
+  log(`info`, `error`, Message.OVERHEAD);
   process.exit(ExitCode.ERROR);
 }
 

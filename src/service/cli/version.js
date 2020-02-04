@@ -1,12 +1,11 @@
 'use strict';
 
-const chalk = require(`chalk`);
-
 const packageJsonFile = require(`../../../package.json`);
+const log = require(`../../paint-log.js`).log;
 
 module.exports = {
   name: `--version`,
   run() {
-    console.info(chalk.blue(packageJsonFile.version));
+    log(`info`, `version`, packageJsonFile.version);
   }
 };

@@ -1,7 +1,7 @@
 'use strict';
 
-const chalk = require(`chalk`);
 const {getRandomInt, shuffleArray} = require(`../../utils`);
+const log = require(`../../paint-log.js`).log;
 
 const DEFAULT_AMOUNT = 1;
 const FILE_NAME = `mocks.json`;
@@ -90,7 +90,7 @@ const generateOffer = () => {
   };
 };
 
-// Генерация объявлений
+// Генерация массива объявлений
 const generateOffers = (amount) => {
   for (let i = 0; i < amount; i++) {
     offers.push(generateOffer());
@@ -109,9 +109,9 @@ module.exports = {
 
     try {
       await fs.writeFile(FILE_NAME, offersInJSON);
-      console.info(chalk.green(ResultWriteMessage.SUCCESS));
+      log(`info`, `success`, ResultWriteMessage.SUCCESS);
     } catch (err) {
-      console.error(chalk.red(ResultWriteMessage.ERROR));
+      log(`error`, `error`, ResultWriteMessage.ERROR);
     }
   }
 };
