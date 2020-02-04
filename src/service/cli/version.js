@@ -6,6 +6,6 @@ const log = require(`../../paint-log.js`).log;
 module.exports = {
   name: `--version`,
   run() {
-    log(`info`, `version`, packageJsonFile.version);
+    log(packageJsonFile.version, `info`, `version`);
   }
 };
