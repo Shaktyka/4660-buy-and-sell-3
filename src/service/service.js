@@ -20,13 +20,21 @@ if (offersAmount > OFFERS_AMOUNT_MAX) {
   process.exit(ExitCode.ERROR);
 }
 
+let result = null;
+
 if (userArguments.length === 0 || !Cli[userCommand[0]]) {
-  Cli[DEFAULT_COMMAND].run()
-    .then(() => process.exit(ExitCode.SUCCESS))
-    .catch((err) => console.log(err));
+  result = Cli[DEFAULT_COMMAND].run();
+  if (result instanceof Promise) {
+    result
+      .then(() => process.exit(ExitCode.SUCCESS))
+      .catch((err) => console.log(err));
+  }
 } else {
-  Cli[userCommand[0]].run(offersAmount)
-  .then(() => process.exit(ExitCode.SUCCESS))
-  .catch((err) => console.log(err));
+  result = Cli[userCommand[0]].run(offersAmount);
+  if (result instanceof Promise) {
+    result
+      .then(() => process.exit(ExitCode.SUCCESS))
+      .catch((err) => console.log(err));
+  }
 }
 

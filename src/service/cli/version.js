@@ -6,16 +6,9 @@ const log = require(`../../paint-log.js`).log;
 module.exports = {
   name: `--version`,
   async run() {
-    let result = null;
-    try {
-      const version = await packageJsonFile.version;
-      if (version) {
-        log(version, `info`, `version`);
-        result = version;
-      }
-    } catch (err) {
-      result = err;
+    const version = await packageJsonFile.version;
+    if (version) {
+      await log(version, `info`, `version`);
     }
-    return result;
   }
 };
