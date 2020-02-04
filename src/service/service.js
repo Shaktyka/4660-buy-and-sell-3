@@ -1,6 +1,7 @@
 'use strict';
 
 const {Cli} = require(`./cli`);
+const log = require(`../paint-log.js`).log;
 
 const {
   DEFAULT_COMMAND,
@@ -12,16 +13,28 @@ const {
 
 const userArguments = process.argv.slice(USER_ARGV_INDEX);
 const userCommand = userArguments.slice(USER_ARGV_INDEX);
-const offersAmount = userCommand.slice(1);
-
-if (userArguments.length === 0 || !Cli[userCommand[0]]) {
-  Cli[DEFAULT_COMMAND].run();
-  process.exit(ExitCode.success);
-}
+const offersAmount = userCommand.slice(USER_ARGV_INDEX);
 
 if (offersAmount > OFFERS_AMOUNT_MAX) {
-  console.info(Message.overhead);
-  process.exit(ExitCode.error);
+  log(Message.OVERHEAD, `info`, `error`);
+  process.exit(ExitCode.ERROR);
 }
 
-Cli[userCommand[0]].run(offersAmount);
+let result = null;
+
+if (userArguments.length === 0 || !Cli[userCommand[0]]) {
+  result = Cli[DEFAULT_COMMAND].run();
+  if (result instanceof Promise) {
+    result
+      .then(() => process.exit(ExitCode.SUCCESS))
+      .catch((err) => console.log(err));
+  }
+} else {
+  result = Cli[userCommand[0]].run(offersAmount);
+  if (result instanceof Promise) {
+    result
+      .then(() => process.exit(ExitCode.SUCCESS))
+      .catch((err) => console.log(err));
+  }
+}
+

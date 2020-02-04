@@ -1,8 +1,8 @@
 'use strict';
 
 const {getRandomInt, shuffleArray} = require(`../../utils`);
+const log = require(`../../paint-log.js`).log;
 
-// Специфичный код, необходимый для выполнения команды
 const DEFAULT_AMOUNT = 1;
 const FILE_NAME = `mocks.json`;
 
@@ -45,42 +45,52 @@ const CATEGORIES = [
   `Журналы`
 ];
 
+const ResultLogMessage = {
+  SUCCESS: `Operation success. File created.`,
+  ERROR: `Can't write data to file...`
+};
+
 const OfferType = {
-  offer: `offer`,
-  sale: `sale`,
+  OFFER: `offer`,
+  SALE: `sale`,
 };
 
 const PriceRestrict = {
-  min: 1000,
-  max: 100000,
+  MIN: 1000,
+  MAX: 100000,
 };
 
 const PictureRestrict = {
-  min: 1,
-  max: 16,
+  MIN: 1,
+  MAX: 16,
 };
 
 let offers = [];
 
 // Генерация ссылки на изображение
 const getPictureFileName = (integer) => {
-  integer = String(integer).length === 1 ? `0${integer}` : integer;
+  integer = integer < 10 ? `0${integer}` : integer;
   return `item${integer}.jpg`;
+};
+
+// Получение типа объявления
+const getTypeOffer = () => {
+  return Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)].toLowerCase();
 };
 
 // Генерация одного объявления
 const generateOffer = () => {
   return {
     title: TITLES[getRandomInt(0, TITLES.length - 1)],
-    picture: getPictureFileName(getRandomInt(PictureRestrict.min, PictureRestrict.max)),
-    description: shuffleArray(DESCRIPTIONS).slice(0, getRandomInt(1, 4)).join(' '),
-    type: Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)],
-    sum: getRandomInt(PriceRestrict.min, PriceRestrict.max),
+    picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
+    description: shuffleArray(DESCRIPTIONS).slice(0, getRandomInt(1, 4)).join(` `),
+    type: getTypeOffer(),
+    sum: getRandomInt(PriceRestrict.MIN, PriceRestrict.MAX),
     category: shuffleArray(CATEGORIES).slice(0, getRandomInt(1, 3))
   };
 };
 
-// Генерация объявлений
+// Генерация массива объявлений
 const generateOffers = (amount) => {
   for (let i = 0; i < amount; i++) {
     offers.push(generateOffer());
@@ -90,18 +100,18 @@ const generateOffers = (amount) => {
 
 module.exports = {
   name: `--generate`,
-  run(args) {
-    const fs = require(`fs`);
+  async run(args) {
+    const fs = require(`fs`).promises;
 
     const [offersCount] = args;
     const amountOffers = Number.parseInt(offersCount, 10) || DEFAULT_AMOUNT;
     const offersInJSON = JSON.stringify(generateOffers(amountOffers));
 
-    fs.writeFile(FILE_NAME, offersInJSON, (err) => {
-      if (err) {
-        return console.error(`Can't write data to file...`);
-      }
-      return console.info(`Operation success. File created.`);
-    });
+    try {
+      await fs.writeFile(FILE_NAME, offersInJSON);
+      log(ResultLogMessage.SUCCESS, `info`, `success`);
+    } catch (err) {
+      log(ResultLogMessage.ERROR, `error`, `error`);
+    }
   }
 };
