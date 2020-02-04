@@ -17,6 +17,6 @@ const HELP_TEXT = `
 module.exports = {
   name: `--help`,
   run() {
-    log(`info`, `help`, HELP_TEXT);
+    log(HELP_TEXT, `info`, `help`);
   }
 };

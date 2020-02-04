@@ -21,7 +21,7 @@ if (userArguments.length === 0 || !Cli[userCommand[0]]) {
 }
 
 if (offersAmount > OFFERS_AMOUNT_MAX) {
-  log(`info`, `error`, Message.OVERHEAD);
+  log(Message.OVERHEAD, `info`, `error`);
   process.exit(ExitCode.ERROR);
 }
 

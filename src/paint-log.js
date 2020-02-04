@@ -1,4 +1,6 @@
-const chalk = require('chalk');
+'use strict';
+
+const chalk = require(`chalk`);
 
 const LogMethod = {
   LOG: console.log,

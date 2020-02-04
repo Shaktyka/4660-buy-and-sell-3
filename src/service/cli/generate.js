@@ -109,9 +109,9 @@ module.exports = {
 
     try {
       await fs.writeFile(FILE_NAME, offersInJSON);
-      log(`info`, `success`, ResultWriteMessage.SUCCESS);
+      log(ResultWriteMessage.SUCCESS, `info`, `success`);
     } catch (err) {
-      log(`error`, `error`, ResultWriteMessage.ERROR);
+      log(ResultWriteMessage.ERROR, `error`, `error`);
     }
   }
 };
