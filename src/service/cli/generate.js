@@ -45,7 +45,7 @@ const CATEGORIES = [
   `Журналы`
 ];
 
-const ResultWriteMessage = {
+const ResultLogMessage = {
   SUCCESS: `Operation success. File created.`,
   ERROR: `Can't write data to file...`
 };
@@ -109,9 +109,9 @@ module.exports = {
 
     try {
       await fs.writeFile(FILE_NAME, offersInJSON);
-      log(ResultWriteMessage.SUCCESS, `info`, `success`);
+      log(ResultLogMessage.SUCCESS, `info`, `success`);
     } catch (err) {
-      log(ResultWriteMessage.ERROR, `error`, `error`);
+      log(ResultLogMessage.ERROR, `error`, `error`);
     }
   }
 };

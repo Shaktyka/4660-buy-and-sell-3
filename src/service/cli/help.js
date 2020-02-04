@@ -16,7 +16,13 @@ const HELP_TEXT = `
 
 module.exports = {
   name: `--help`,
-  run() {
-    log(HELP_TEXT, `info`, `help`);
+  async run() {
+    let result = null;
+    try {
+      result = await log(HELP_TEXT, `info`, `help`);
+    } catch (err) {
+      result = err;
+    }
+    return result;
   }
 };
