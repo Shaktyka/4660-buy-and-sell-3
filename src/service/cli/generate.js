@@ -2,9 +2,14 @@
 
 const {getRandomInt, shuffleArray} = require(`../../utils`);
 const log = require(`../../paint-log.js`).log;
+const fs = require(`fs`).promises;
 
 const DEFAULT_AMOUNT = 1;
 const FILE_NAME = `mocks.json`;
+
+const FILE_DESCRIPTIONS_PATH = `./data/descriptions.txt`;
+const FILE_CATEGORIES_PATH = `./data/categories.txt`;
+const FILE_TITLES_PATH = `./data/titles.txt`;
 
 const ResultLogMessage = {
   SUCCESS: `Operation success. File created.`,
@@ -39,31 +44,33 @@ const getTypeOffer = () => {
   return Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)].toLowerCase();
 };
 
-/*
-Напишите функцию для чтения информации из файлов.
-Функция принимает на вход имя файла из которого требуется прочитать информацию.
-Результатом функции должен быть массив, считанных строк.
-Для чтения файлов используйте асинхронную функцию readFile.
-Для работы с асинхронным кодом воспользуйтесь async/await.
-Обновите код вашего приложения, чтобы он начал использовать данные из файлов.
- */
+// Читает данные из файлов
+const readContent = async (filePath) => {
+  try {
+    const content = await fs.readFile(filePath, `utf8`);
+    return content.split(`\n`);
+  } catch (err) {
+    log(err, `error`, `error`);
+    return [];
+  }
+};
 
 // Генерация одного объявления
-const generateOffer = () => {
+const generateOffer = (titles, categories, descriptions) => {
   return {
-    title: TITLES[getRandomInt(0, TITLES.length - 1)],
+    title: titles[getRandomInt(0, titles.length - 1)],
     picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
-    description: shuffleArray(DESCRIPTIONS).slice(0, getRandomInt(1, 4)).join(` `),
+    description: shuffleArray(descriptions).slice(0, getRandomInt(1, 4)).join(` `),
     type: getTypeOffer(),
     sum: getRandomInt(PriceRestrict.MIN, PriceRestrict.MAX),
-    category: shuffleArray(CATEGORIES).slice(0, getRandomInt(1, 3))
+    category: shuffleArray(categories).slice(0, getRandomInt(1, 3))
   };
 };
 
 // Генерация массива объявлений
-const generateOffers = (amount) => {
+const generateOffers = (amount, titles, categories, descriptions) => {
   for (let i = 0; i < amount; i++) {
-    offers.push(generateOffer());
+    offers.push(generateOffer(titles, categories, descriptions));
   }
   return offers;
 };
@@ -71,11 +78,13 @@ const generateOffers = (amount) => {
 module.exports = {
   name: `--generate`,
   async run(args) {
-    const fs = require(`fs`).promises;
+    const titles = await readContent(FILE_TITLES_PATH);
+    const categories = await readContent(FILE_CATEGORIES_PATH);
+    const descriptions = await readContent(FILE_DESCRIPTIONS_PATH);
 
     const [offersCount] = args;
     const amountOffers = Number.parseInt(offersCount, 10) || DEFAULT_AMOUNT;
-    const offersInJSON = JSON.stringify(generateOffers(amountOffers));
+    const offersInJSON = JSON.stringify(generateOffers(amountOffers, titles, categories, descriptions));
 
     try {
       await fs.writeFile(FILE_NAME, offersInJSON);
