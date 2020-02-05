@@ -1,5 +1,8 @@
 'use strict';
 
+const log = require(`../../paint-log.js`).log;
+const fs = require(`fs`).promises;
+
 // Генерация рандомных чисел
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
@@ -16,7 +19,19 @@ const shuffleArray = (someArray) => {
   return someArray;
 };
 
+// Читает данные из файла
+const readContent = async (filePath) => {
+  try {
+    const content = await fs.readFile(filePath, `utf8`);
+    return content.split(`\n`);
+  } catch (err) {
+    log(err, `error`, `error`);
+    return [];
+  }
+};
+
 module.exports = {
   getRandomInt,
-  shuffleArray
+  shuffleArray,
+  readContent
 };
