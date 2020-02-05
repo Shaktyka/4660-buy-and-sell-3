@@ -2,48 +2,16 @@
 
 const {getRandomInt, shuffleArray} = require(`../../utils`);
 const log = require(`../../paint-log.js`).log;
+const fs = require(`fs`).promises;
 
 const DEFAULT_AMOUNT = 1;
 const FILE_NAME = `mocks.json`;
 
-const TITLES = [
-  `Продам книги Стивена Кинга`,
-  `Продам новую приставку Sony Playstation 5`,
-  `Продам отличную подборку фильмов на VHS`,
-  `Куплю антиквариат`,
-  `Куплю породистого кота`,
-  `Продам коллекцию журналов «Огонёк»`,
-  `Отдам в хорошие руки подшивку «Мурзилка»`,
-  `Продам советскую посуду. Почти не разбита.`,
-  `Куплю детские санки.`
-];
-
-const DESCRIPTIONS = [
-  `Товар в отличном состоянии.`,
-  `Пользовались бережно и только по большим праздникам.`,
-  `Продаю с болью в сердце...`,
-  `Бонусом отдам все аксессуары.`,
-  `Даю недельную гарантию.`,
-  `Если товар не понравится — верну всё до последней копейки.`,
-  `Это настоящая находка для коллекционера!`,
-  `Если найдёте дешевле — сброшу цену.`,
-  `Таких предложений больше нет!`,
-  `Две страницы заляпаны свежим кофе.`,
-  `При покупке с меня бесплатная доставка в черте города.`,
-  `Кажется, что это хрупкая вещь.`,
-  `Мой дед не мог её сломать.`,
-  `Кому нужен этот новый телефон, если тут такое...`,
-  `Не пытайтесь торговаться. Цену вещам я знаю.`
-];
-
-const CATEGORIES = [
-  `Книги`,
-  `Разное`,
-  `Посуда`,
-  `Игры`,
-  `Животные`,
-  `Журналы`
-];
+const FilePath = {
+  TITLES: `./data/titles.txt`,
+  CATEGORIES: `./data/categories.txt`,
+  DESCRIPTIONS: `./data/descriptions.txt`
+};
 
 const ResultLogMessage = {
   SUCCESS: `Operation success. File created.`,
@@ -65,7 +33,10 @@ const PictureRestrict = {
   MAX: 16,
 };
 
-let offers = [];
+const offers = [];
+let titlesData = [];
+let categoriesData = [];
+let descriptionsData = [];
 
 // Генерация ссылки на изображение
 const getPictureFileName = (integer) => {
@@ -78,22 +49,33 @@ const getTypeOffer = () => {
   return Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)].toLowerCase();
 };
 
+// Читает данные из файлов
+const readContent = async (filePath) => {
+  try {
+    const content = await fs.readFile(filePath, `utf8`);
+    return content.split(`\n`);
+  } catch (err) {
+    log(err, `error`, `error`);
+    return [];
+  }
+};
+
 // Генерация одного объявления
-const generateOffer = () => {
+const generateOffer = (titles, categories, descriptions) => {
   return {
-    title: TITLES[getRandomInt(0, TITLES.length - 1)],
+    title: titles[getRandomInt(0, titles.length - 1)],
     picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
-    description: shuffleArray(DESCRIPTIONS).slice(0, getRandomInt(1, 4)).join(` `),
+    description: shuffleArray(descriptions).slice(0, getRandomInt(1, 4)).join(` `),
     type: getTypeOffer(),
     sum: getRandomInt(PriceRestrict.MIN, PriceRestrict.MAX),
-    category: shuffleArray(CATEGORIES).slice(0, getRandomInt(1, 3))
+    category: shuffleArray(categories).slice(0, getRandomInt(1, 3))
   };
 };
 
 // Генерация массива объявлений
-const generateOffers = (amount) => {
+const generateOffers = (amount, titlesArray, categoriesArray, descriptionsArray) => {
   for (let i = 0; i < amount; i++) {
-    offers.push(generateOffer());
+    offers.push(generateOffer(titlesArray, categoriesArray, descriptionsArray));
   }
   return offers;
 };
@@ -101,11 +83,13 @@ const generateOffers = (amount) => {
 module.exports = {
   name: `--generate`,
   async run(args) {
-    const fs = require(`fs`).promises;
+    titlesData = await readContent(FilePath.TITLES);
+    categoriesData = await readContent(FilePath.CATEGORIES);
+    descriptionsData = await readContent(FilePath.DESCRIPTIONS);
 
     const [offersCount] = args;
     const amountOffers = Number.parseInt(offersCount, 10) || DEFAULT_AMOUNT;
-    const offersInJSON = JSON.stringify(generateOffers(amountOffers));
+    const offersInJSON = JSON.stringify(generateOffers(amountOffers, titlesData, categoriesData, descriptionsData));
 
     try {
       await fs.writeFile(FILE_NAME, offersInJSON);

@@ -22,19 +22,22 @@ if (offersAmount > OFFERS_AMOUNT_MAX) {
 
 let result = null;
 
+// Обрабатывает результат асинхронного выполнения команд
+const processResult = (promice) => {
+  promice
+    .then(() => process.exit(ExitCode.SUCCESS))
+    .catch((err) => console.log(err));
+};
+
 if (userArguments.length === 0 || !Cli[userCommand[0]]) {
   result = Cli[DEFAULT_COMMAND].run();
   if (result instanceof Promise) {
-    result
-      .then(() => process.exit(ExitCode.SUCCESS))
-      .catch((err) => console.log(err));
+    processResult(result);
   }
 } else {
   result = Cli[userCommand[0]].run(offersAmount);
   if (result instanceof Promise) {
-    result
-      .then(() => process.exit(ExitCode.SUCCESS))
-      .catch((err) => console.log(err));
+    processResult(result);
   }
 }
 
