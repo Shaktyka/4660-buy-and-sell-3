@@ -11,6 +11,15 @@ const {
   Message
 } = require(`../constants.js`);
 
+// ---------------------------
+
+const userArguments = process.argv.slice(USER_ARGV_INDEX);
+
+
+
+// ---------------------------
+
+/*
 const userArguments = process.argv.slice(USER_ARGV_INDEX);
 const userCommand = userArguments.slice(USER_ARGV_INDEX);
 const offersAmount = userCommand.slice(USER_ARGV_INDEX);
@@ -22,15 +31,11 @@ if (offersAmount > OFFERS_AMOUNT_MAX) {
 
 let result = null;
 
-// Обрабатывает результат асинхронного выполнения команд
 const processResult = (promice) => {
   promice
     .then(() => process.exit(ExitCode.SUCCESS))
     .catch((err) => console.log(err));
 };
-
-// Предусмотреть запуск --server без порта и с портом
-// Проверять команду и вызывать в зависимости от неё?
 
 if (userArguments.length === 0 || !Cli[userCommand[0]]) {
   result = Cli[DEFAULT_COMMAND].run();
@@ -43,4 +48,4 @@ if (userArguments.length === 0 || !Cli[userCommand[0]]) {
     processResult(result);
   }
 }
-
+*/
