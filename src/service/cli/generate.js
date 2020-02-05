@@ -33,10 +33,10 @@ const PictureRestrict = {
   MAX: 16,
 };
 
-let offers = [];
-let titles = [];
-let categories = [];
-let descriptions = [];
+const offers = [];
+let titlesData = [];
+let categoriesData = [];
+let descriptionsData = [];
 
 // Генерация ссылки на изображение
 const getPictureFileName = (integer) => {
@@ -73,9 +73,9 @@ const generateOffer = (titles, categories, descriptions) => {
 };
 
 // Генерация массива объявлений
-const generateOffers = (amount, titles, categories, descriptions) => {
+const generateOffers = (amount, titlesArray, categoriesArray, descriptionsArray) => {
   for (let i = 0; i < amount; i++) {
-    offers.push(generateOffer(titles, categories, descriptions));
+    offers.push(generateOffer(titlesArray, categoriesArray, descriptionsArray));
   }
   return offers;
 };
@@ -83,13 +83,13 @@ const generateOffers = (amount, titles, categories, descriptions) => {
 module.exports = {
   name: `--generate`,
   async run(args) {
-    titles = await readContent(FilePath.TITLES);
-    categories = await readContent(FilePath.CATEGORIES);
-    descriptions = await readContent(FilePath.DESCRIPTIONS);
+    titlesData = await readContent(FilePath.TITLES);
+    categoriesData = await readContent(FilePath.CATEGORIES);
+    descriptionsData = await readContent(FilePath.DESCRIPTIONS);
 
     const [offersCount] = args;
     const amountOffers = Number.parseInt(offersCount, 10) || DEFAULT_AMOUNT;
-    const offersInJSON = JSON.stringify(generateOffers(amountOffers, titles, categories, descriptions));
+    const offersInJSON = JSON.stringify(generateOffers(amountOffers, titlesData, categoriesData, descriptionsData));
 
     try {
       await fs.writeFile(FILE_NAME, offersInJSON);
