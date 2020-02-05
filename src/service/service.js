@@ -29,6 +29,9 @@ const processResult = (promice) => {
     .catch((err) => console.log(err));
 };
 
+// Предусмотреть запуск --server без порта и с портом
+// Проверять команду и вызывать в зависимости от неё?
+
 if (userArguments.length === 0 || !Cli[userCommand[0]]) {
   result = Cli[DEFAULT_COMMAND].run();
   if (result instanceof Promise) {
