@@ -7,9 +7,11 @@ const fs = require(`fs`).promises;
 const DEFAULT_AMOUNT = 1;
 const FILE_NAME = `mocks.json`;
 
-const FILE_DESCRIPTIONS_PATH = `./data/descriptions.txt`;
-const FILE_CATEGORIES_PATH = `./data/categories.txt`;
-const FILE_TITLES_PATH = `./data/titles.txt`;
+const FilePath = {
+  TITLES: `./data/titles.txt`,
+  CATEGORIES: `./data/categories.txt`,
+  DESCRIPTIONS: `./data/descriptions.txt`
+};
 
 const ResultLogMessage = {
   SUCCESS: `Operation success. File created.`,
@@ -32,6 +34,9 @@ const PictureRestrict = {
 };
 
 let offers = [];
+let titles = [];
+let categories = [];
+let descriptions = [];
 
 // Генерация ссылки на изображение
 const getPictureFileName = (integer) => {
@@ -78,9 +83,9 @@ const generateOffers = (amount, titles, categories, descriptions) => {
 module.exports = {
   name: `--generate`,
   async run(args) {
-    const titles = await readContent(FILE_TITLES_PATH);
-    const categories = await readContent(FILE_CATEGORIES_PATH);
-    const descriptions = await readContent(FILE_DESCRIPTIONS_PATH);
+    titles = await readContent(FilePath.TITLES);
+    categories = await readContent(FilePath.CATEGORIES);
+    descriptions = await readContent(FilePath.DESCRIPTIONS);
 
     const [offersCount] = args;
     const amountOffers = Number.parseInt(offersCount, 10) || DEFAULT_AMOUNT;
