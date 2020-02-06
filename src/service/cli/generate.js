@@ -76,8 +76,7 @@ module.exports = {
     categoriesData = await readContent(FilePath.CATEGORIES);
     descriptionsData = await readContent(FilePath.DESCRIPTIONS);
 
-    const [offersCount] = args;
-    const amountOffers = Number.parseInt(offersCount, 10) || DEFAULT_AMOUNT;
+    const amountOffers = Number.parseInt(args, 10) || DEFAULT_AMOUNT;
     const offersInJSON = JSON.stringify(generateOffers(amountOffers, titlesData, categoriesData, descriptionsData));
 
     try {

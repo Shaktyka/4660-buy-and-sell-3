@@ -11,41 +11,30 @@ const {
   Message
 } = require(`../constants.js`);
 
-// ---------------------------
+const userArguments = process.argv.slice(USER_ARGV_INDEX); // массив параметров польз-ля
+let userCommand = userArguments[0];
+const amountParam = userArguments[1];
+let result = null;
 
-const userArguments = process.argv.slice(USER_ARGV_INDEX);
-console.log(process.argv);
+// Если параметры не переданы или команда не найдена
+if (userArguments.length === 0 || !Cli[userCommand]) {
+  userCommand = DEFAULT_COMMAND;
+}
 
-
-// ---------------------------
-
-/*
-const userArguments = process.argv.slice(USER_ARGV_INDEX);
-const userCommand = userArguments.slice(USER_ARGV_INDEX);
-const offersAmount = userCommand.slice(USER_ARGV_INDEX);
-
-if (offersAmount > OFFERS_AMOUNT_MAX) {
+if (userCommand === `--generate` && amountParam > OFFERS_AMOUNT_MAX) {
   log(Message.OVERHEAD, `info`, `error`);
   process.exit(ExitCode.ERROR);
 }
 
-let result = null;
-
+// Проверка результата
 const processResult = (promice) => {
   promice
     .then(() => process.exit(ExitCode.SUCCESS))
     .catch((err) => console.log(err));
 };
 
-if (userArguments.length === 0 || !Cli[userCommand[0]]) {
-  result = Cli[DEFAULT_COMMAND].run();
-  if (result instanceof Promise) {
-    processResult(result);
-  }
-} else {
-  result = Cli[userCommand[0]].run(offersAmount);
-  if (result instanceof Promise) {
-    processResult(result);
-  }
+// Вычисление и возврат результата
+result = Cli[userCommand].run(amountParam);
+if (result instanceof Promise) {
+  processResult(result);
 }
-*/

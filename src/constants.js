@@ -1,7 +1,7 @@
 'use strict';
 
 const DEFAULT_COMMAND = `--help`;
-const USER_ARGV_INDEX = 1;
+const USER_ARGV_INDEX = 2;
 const OFFERS_AMOUNT_MAX = 1000;
 const DEFAULT_SERVER_PORT = 3000;
 
