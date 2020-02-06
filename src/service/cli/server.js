@@ -3,16 +3,17 @@
 const http = require(`http`);
 const log = require(`./../../paint-log.js`).log;
 const fs = require(`fs`).promises;
-const readContent = require(`./../../utils.js`);
 
 const DEFAULT_PORT = 3000;
-const FILENAME = `mocks.json`;
+const MOCKS_FILE = `mocks.json`;
 const NOT_FOUND_MESSAGE = `Not found`;
 
-const StatusCode = {
+const HttpCode = {
   OK: 200,
   NOT_FOUND: 404,
-  SERVER_ERROR: 500
+  INTERNAL_SERVER_ERROR: 500,
+  FORBIDDEN: 403,
+  UNAUTHORIZED: 401
 };
 
 const ServerLogText = {
@@ -20,41 +21,58 @@ const ServerLogText = {
   CONNECT: `Ожидаю соединений на `
 };
 
-// Рендерим список данных для возвращения клиенту
-const renderResponseText = (stringsArray) => {
-  const listString = `<ul>`;
-  stringsArray.forEach((string) => {
-    listString += `<li>${string}</li>`;
+// Отправляем ответ
+const sendResponse = (response, statusCode, message) => {
+  const template = `
+    <!Doctype html>
+      <html lang="ru">
+      <head>
+        <title>Mocks Data</title>
+      </head>
+      <body>${message}</body>
+    </html>`.trim();
+
+  response.statusCode = statusCode;
+  response.writeHead(statusCode, {
+    'Content-Type': `text/html; charset=UTF-8`,
   });
-  listString += `</ul>`;
-  return listString;
+
+  response.end(template);
+};
+
+// Рендерим список данных для возвращения клиенту
+const renderContent = (offersArr) => {
+  let content = ``;
+  offersArr.forEach((offer) => {
+    if (offer.title.length > 0) {
+      content += `<li>${offer.title}</li>`;
+    }
+  });
+  return `<ul>${content}</ul>`;
 };
 
 // Ответ сервера
-const onClientConnect = (request, response) => {
+const onClientConnect = async (request, response) => {
   switch (request.url) {
     case `/`:
-      const responseText = renderResponseText([]);
-
-      response.writeHead(StatusCode.OK, {
-        'Content-Type': `text/html; charset=UTF-8`,
-      });
-
-      response.end();
+      try {
+        const fileContent = await fs.readFile(MOCKS_FILE);
+        const mocksData = JSON.parse(fileContent);
+        sendResponse(response, HttpCode.OK, renderContent(mocksData));
+      } catch (err) {
+        sendResponse(response, HttpCode.NOT_FOUND, NOT_FOUND_MESSAGE);
+      }
       break;
-
     default:
-      response.writeHead(StatusCode.NOT_FOUND, {
-        'Content-Type': `text/plain; charset=UTF-8`,
-      });
-      response.end(NOT_FOUND_MESSAGE);
+      sendResponse(response, HttpCode.NOT_FOUND, NOT_FOUND_MESSAGE);
+      break;
   }
 };
 
 // Экспорт
 module.exports = {
   name: `--server`,
-  async run(args) {
+  run(args) {
     const port = Number.parseInt(args, 10) || DEFAULT_PORT;
 
     http.createServer(onClientConnect)
