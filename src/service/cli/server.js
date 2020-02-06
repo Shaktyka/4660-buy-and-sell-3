@@ -15,12 +15,26 @@ const StatusCode = {
   SERVER_ERROR: 500
 };
 
+const ServerLogText = {
+  ERROR: `Ошибка при создании сервера`,
+  CONNECT: `Ожидаю соединений на `
+};
+
+// Рендерим список данных для возвращения клиенту
+const renderResponseText = (stringsArray) => {
+  const listString = `<ul>`;
+  stringsArray.forEach((string) => {
+    listString += `<li>${string}</li>`;
+  });
+  listString += `</ul>`;
+  return listString;
+};
+
 // Ответ сервера
 const onClientConnect = (request, response) => {
-
   switch (request.url) {
     case `/`:
-      // const responseText = getResponseText([]);
+      const responseText = renderResponseText([]);
 
       response.writeHead(StatusCode.OK, {
         'Content-Type': `text/html; charset=UTF-8`,
@@ -37,30 +51,19 @@ const onClientConnect = (request, response) => {
   }
 };
 
-// Рендерим список данных для возвращения клиенту
-const renderResponseText = (stringsArray) => {
-  const listString = `<ul>`;
-  stringsArray.forEach((string) => {
-    listString += `<li>${string}</li>`;
-  });
-  listString += `</ul>`;
-  return listString;
-};
-
 // Экспорт
 module.exports = {
   name: `--server`,
   async run(args) {
-    const [customPort] = args;
-    const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
+    const port = Number.parseInt(args, 10) || DEFAULT_PORT;
 
     http.createServer(onClientConnect)
       .listen(port)
       .on(`listening`, (err) => {
         if (err) {
-          return console.error(`Ошибка при создании сервера`, err);
+          return console.error(ServerLogText.ERROR, err);
         }
-        return console.info(`Ожидаю соединений на ${port}`);
+        return log(ServerLogText.CONNECT + port, `info`, `success`);
       });
   }
 };

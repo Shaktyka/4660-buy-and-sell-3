@@ -11,7 +11,7 @@ const {
   Message
 } = require(`../constants.js`);
 
-const userArguments = process.argv.slice(USER_ARGV_INDEX); // массив параметров польз-ля
+const userArguments = process.argv.slice(USER_ARGV_INDEX);
 let userCommand = userArguments[0];
 const amountParam = userArguments[1];
 let result = null;
