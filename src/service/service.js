@@ -14,7 +14,7 @@ const {
 // ---------------------------
 
 const userArguments = process.argv.slice(USER_ARGV_INDEX);
-
+console.log(process.argv);
 
 
 // ---------------------------

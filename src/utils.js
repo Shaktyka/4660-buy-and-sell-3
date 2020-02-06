@@ -1,6 +1,6 @@
 'use strict';
 
-const log = require(`../../paint-log.js`).log;
+const log = require(`./paint-log.js`).log;
 const fs = require(`fs`).promises;
 
 // Генерация рандомных чисел

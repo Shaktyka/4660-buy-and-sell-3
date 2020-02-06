@@ -1,9 +1,9 @@
 'use strict';
 
 const http = require(`http`);
-const log = require(`../../paint-log.js`).log;
+const log = require(`./../../paint-log.js`).log;
 const fs = require(`fs`).promises;
-const readContent = require(`./../utils.js`);
+const readContent = require(`./../../utils.js`);
 
 const DEFAULT_PORT = 3000;
 const FILENAME = `mocks.json`;
