@@ -1,6 +1,6 @@
 'use strict';
 
-const {getRandomInt, shuffleArray} = require(`../../utils`);
+const {getRandomInt, shuffleArray, readContent} = require(`../../utils`);
 const log = require(`../../paint-log.js`).log;
 const fs = require(`fs`).promises;
 
@@ -34,9 +34,9 @@ const PictureRestrict = {
 };
 
 const offers = [];
-let titlesData = [];
-let categoriesData = [];
-let descriptionsData = [];
+let titlesData = null;
+let categoriesData = null;
+let descriptionsData = null;
 
 // Генерация ссылки на изображение
 const getPictureFileName = (integer) => {
@@ -47,17 +47,6 @@ const getPictureFileName = (integer) => {
 // Получение типа объявления
 const getTypeOffer = () => {
   return Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)].toLowerCase();
-};
-
-// Читает данные из файлов
-const readContent = async (filePath) => {
-  try {
-    const content = await fs.readFile(filePath, `utf8`);
-    return content.split(`\n`);
-  } catch (err) {
-    log(err, `error`, `error`);
-    return [];
-  }
 };
 
 // Генерация одного объявления
@@ -87,8 +76,7 @@ module.exports = {
     categoriesData = await readContent(FilePath.CATEGORIES);
     descriptionsData = await readContent(FilePath.DESCRIPTIONS);
 
-    const [offersCount] = args;
-    const amountOffers = Number.parseInt(offersCount, 10) || DEFAULT_AMOUNT;
+    const amountOffers = Number.parseInt(args, 10) || DEFAULT_AMOUNT;
     const offersInJSON = JSON.stringify(generateOffers(amountOffers, titlesData, categoriesData, descriptionsData));
 
     try {
