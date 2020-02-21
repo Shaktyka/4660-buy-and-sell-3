@@ -8,7 +8,8 @@
     "eslint": "eslint --ext .js src/",
     "start": "node ./src/service/service.js",
     "generate": "node ./src/service/service.js --generate 5",
-    "server": "nodemon ./src/service/service.js --server 3000"
+    "server": "nodemon ./src/service/service.js --server 3000",
+    "start-front-server": "nodemon ./src/express/index.js"
   },
   "repository": {
     "type": "git",
