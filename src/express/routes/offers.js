@@ -6,10 +6,19 @@ const offersRouter = new Router();
 offersRouter.get(`/`, (req, res) => res.send(`/offers`));
 offersRouter.get(`/add`, (req, res) => res.send(`/offers/add`));
 
-offersRouter.get(`/:id`, (req, res) => res.send(`/offers/:id ${req.params.id}`)); // страница объявления
-offersRouter.get(`/category/:id`, (req, res) => res.send(`/offers/category/:id ${req.params.id}`)); // объявления определённой категории
-offersRouter.get(`/edit/:id`, (req, res) => res.send(`/offers/edit/:id ${req.params.id}`)); // редактирование объявления
+offersRouter.get(`/:id`, (req, res) => {
+  const offersId = Number.parseInt(req.params.id, 10);
+  res.send(`/offers/:id ${offersId}`);
+});
 
-// const companyId = Number.parseInt(req.params.id, 10);
+offersRouter.get(`/category/:id`, (req, res) => {
+  const categoryId = Number.parseInt(req.params.id, 10);
+  res.send(`/offers/category/:id ${categoryId}`);
+});
+
+offersRouter.get(`/edit/:id`, (req, res) => {
+  const offerId = Number.parseInt(req.params.id, 10);
+  res.send(`/offers/edit/:id ${offerId}`);
+});
 
 module.exports = offersRouter;
