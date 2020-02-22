@@ -21,7 +21,7 @@ app.use(`/search`, searchRouter);
 app.use(`/offers`, offersRouter);
 
 app.get(`/`, (req, res) => {
-  res.render(`./pages/main`);
+  res.render(`./pages/index`);
 });
 
 app.listen(WORK_PORT, () =>
