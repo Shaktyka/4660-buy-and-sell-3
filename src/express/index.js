@@ -16,7 +16,7 @@ app.use(`/my`, myRouter);
 app.use(`/search`, searchRouter);
 app.use(`/offers`, offersRouter);
 
-app.get(`/`, (req, res) => res.send(`Hello, Express!`));
+app.get(`/`, (req, res) => res.send(`/`));
 
 app.listen(WORK_PORT, () =>
   console.log(`Сервер запущен на порту: ${WORK_PORT}`));
