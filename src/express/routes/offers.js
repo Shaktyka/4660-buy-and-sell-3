@@ -3,8 +3,6 @@
 const {Router} = require(`express`);
 const offersRouter = new Router();
 
-// offersRouter.get(`/`, (req, res) => res.send(`/offers`));
-
 offersRouter.get(`/add`, (req, res) => {
   res.render(`../templates/pages/new-ticket`);
 });
