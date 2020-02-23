@@ -8,7 +8,7 @@ myRouter.get(`/`, (req, res) => {
 });
 
 myRouter.get(`/comments`, (req, res) => {
-  // res.send(`/my/comments`);
+  res.render(`../templates/pages/comments`);
 });
 
 module.exports = myRouter;
