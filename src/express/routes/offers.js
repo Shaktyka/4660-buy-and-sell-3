@@ -10,18 +10,18 @@ offersRouter.get(`/add`, (req, res) => {
 });
 
 offersRouter.get(`/:id`, (req, res) => {
-  const offersId = Number.parseInt(req.params.id, 10);
-  res.send(`/offers/:id ${offersId}`);
+  // const offersId = Number.parseInt(req.params.id, 10);
+  res.render(`../templates/pages/ticket`);
 });
 
 offersRouter.get(`/category/:id`, (req, res) => {
-  const categoryId = Number.parseInt(req.params.id, 10);
-  res.send(`/offers/category/:id ${categoryId}`);
+  // const categoryId = Number.parseInt(req.params.id, 10);
+  res.render(`../templates/pages/category`);
 });
 
 offersRouter.get(`/edit/:id`, (req, res) => {
-  const offerId = Number.parseInt(req.params.id, 10);
-  res.send(`/offers/edit/:id ${offerId}`);
+  // const offerId = Number.parseInt(req.params.id, 10);
+  res.render(`../templates/pages/ticket-edit`);
 });
 
 module.exports = offersRouter;
