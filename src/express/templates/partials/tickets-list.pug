@@ -1,9 +1,7 @@
 section.tickets-list
   h2.visually-hidden Самые новые предложения
   .tickets-list__wrapper
-    .tickets-list__header
-      p.tickets-list__title Самое свежее
-      a.tickets-list__link(href="#") Еще 25
+    include ./freshest.pug
     ul
       li.tickets-list__item
         .ticket-card.ticket-card--color01
