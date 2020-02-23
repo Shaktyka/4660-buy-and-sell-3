@@ -10,9 +10,12 @@ const offersRouter = require(`./routes/offers`);
 
 const WORK_PORT = 8080;
 const app = express();
+const STATIC_DIR = path.join(__dirname, `../../markup`);
 
 app.set(`views`, path.join(__dirname, `./templates`));
 app.set(`view engine`, `pug`);
+
+app.use(express.static(STATIC_DIR));
 
 app.use(`/login`, loginRouter);
 app.use(`/register`, registerRouter);
