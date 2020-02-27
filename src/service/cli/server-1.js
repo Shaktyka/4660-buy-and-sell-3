@@ -1,14 +1,20 @@
 'use strict';
 
 const http = require(`http`);
+const log = require(`./../../paint-log.js`).log;
 const fs = require(`fs`).promises;
-const {HttpCode} = require(`../../constants`);
-
-console.log(HttpCode);
 
 const DEFAULT_PORT = 3000;
 const MOCKS_FILE = `mocks.json`;
 const NOT_FOUND_MESSAGE = `Not found`;
+
+const HttpCode = {
+  OK: 200,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500,
+  FORBIDDEN: 403,
+  UNAUTHORIZED: 401
+};
 
 const ServerLogText = {
   ERROR: `Ошибка при создании сервера`,
@@ -75,8 +81,7 @@ module.exports = {
         if (err) {
           return console.error(ServerLogText.ERROR, err);
         }
-        return console.log(`Сервер запущен на порту ` + port);
-        // log(ServerLogText.CONNECT + port, `info`, `success`);
+        return log(ServerLogText.CONNECT + port, `info`, `success`);
       });
   }
 };
