@@ -3,22 +3,23 @@
 const {Router} = require(`express`);
 const offersRouter = new Router();
 
-offersRouter.get(`/`, (req, res) => res.send(`/offers`));
-offersRouter.get(`/add`, (req, res) => res.send(`/offers/add`));
+offersRouter.get(`/add`, (req, res) => {
+  res.render(`pages/new-ticket`);
+});
 
 offersRouter.get(`/:id`, (req, res) => {
-  const offersId = Number.parseInt(req.params.id, 10);
-  res.send(`/offers/:id ${offersId}`);
+  // const offersId = Number.parseInt(req.params.id, 10);
+  res.render(`pages/ticket`);
 });
 
 offersRouter.get(`/category/:id`, (req, res) => {
-  const categoryId = Number.parseInt(req.params.id, 10);
-  res.send(`/offers/category/:id ${categoryId}`);
+  // const categoryId = Number.parseInt(req.params.id, 10);
+  res.render(`pages/category`);
 });
 
 offersRouter.get(`/edit/:id`, (req, res) => {
-  const offerId = Number.parseInt(req.params.id, 10);
-  res.send(`/offers/edit/:id ${offerId}`);
+  // const offerId = Number.parseInt(req.params.id, 10);
+  res.render(`pages/ticket-edit`);
 });
 
 module.exports = offersRouter;
