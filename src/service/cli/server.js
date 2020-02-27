@@ -1,12 +1,12 @@
 'use strict';
 
 const express = require(`express`);
-const fs = require(`fs`).promises;
-const {HttpCode} = require(`../../constants`);
+// const fs = require(`fs`).promises;
+// const {HttpCode} = require(`../../constants`);
 
 const DEFAULT_PORT = 3000;
-const MOCKS_FILE = `mocks.json`;
-const NOT_FOUND_MESSAGE = `Not found`;
+// const MOCKS_FILE = `mocks.json`;
+// const NOT_FOUND_MESSAGE = `Not found`;
 
 const ServerLogText = {
   ERROR: `Ошибка при создании сервера`,
@@ -14,7 +14,8 @@ const ServerLogText = {
 };
 
 const app = express();
-const router = express.Router();
+const {Router} = require(`express`);
+const router = new Router();
 
 app.use(express.json());
 app.use(`/posts`, router);
