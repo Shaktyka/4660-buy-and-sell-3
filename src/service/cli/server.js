@@ -4,8 +4,10 @@ const express = require(`express`);
 const fs = require(`fs`).promises;
 
 const DEFAULT_PORT = 3000;
-const NOT_FOUND_MESSAGE = `Not found`;
 const MOCKS_FILE = `mocks.json`;
+const NOT_FOUND_MESSAGE = `Файл ${MOCKS_FILE} не найден`;
+const EMPTY_FILE_MESSAGE = `Файл ${MOCKS_FILE} пустой`;
+const DATA_SENT_MESSAGE = `Данные из файла ${MOCKS_FILE} отправлены`;
 
 const ServerLogText = {
   ERROR: `Ошибка при создании сервера`,
@@ -17,18 +19,18 @@ const {Router} = require(`express`);
 const router = new Router();
 
 app.use(express.json());
-app.use(`/posts`, router);
+app.use(`/offers`, router);
 
-// Пробуем получить данные из файла
-// const getMockData = async () => {
-//   const fileContent = await fs.readFile(MOCKS_FILE);
-//   return JSON.parse(fileContent);
-// };
-
-const checkFile = async (res) => {
+const checkMockFile = async (res) => {
   await fs.readFile(MOCKS_FILE, `utf8`)
     .then((data) => {
-      console.log(JSON.parse(data));
+      if (data === ``) {
+        res.send([]);
+        console.log(EMPTY_FILE_MESSAGE);
+      } else {
+        res.json(data);
+        console.log(DATA_SENT_MESSAGE);
+      }
     })
     .catch((err) => {
       if (err.code === `ENOENT`) {
@@ -38,34 +40,10 @@ const checkFile = async (res) => {
       }
       res.send([]);
     });
-
-  // await fs.access(MOCKS_FILE)
-  //   .then(() => isExists = true)
-  //   .catch((err) => {
-  //     console.error(`Ошибка 1`, err);
-  //     isExists = false;
-  //     res.send([]);
-  //   });
-
-  // if (isExists) {
-  //   await fs.stat(MOCKS_FILE)
-  //     .then((result) => {
-  //       console.log(result.size);
-  //       isNotEmpty = result.size > 0 ? true : false;
-  //     })
-  //     .catch((error) => {
-  //       console.error(`Ошибка 2`, error);
-  //       res.send([]);
-  //     });
-  // }
 };
 
-// const stream = fs.createReadStream('files/data.txt', 'utf8')
-// stream.on('data', data => console.log(data))
-// stream.on('error', err => console.log(`Err: ${err}`))
-
 router.use(`/`, (req, res) => {
-  checkFile(res);
+  checkMockFile(res);
 });
 
 module.exports = {
