@@ -2,6 +2,8 @@
 
 const path = require(`path`);
 const express = require(`express`);
+
+const homeRouter = require(`./routes/home`);
 const loginRouter = require(`./routes/login`);
 const registerRouter = require(`./routes/register`);
 const myRouter = require(`./routes/my`);
@@ -18,15 +20,12 @@ app.set(`view engine`, `pug`);
 
 app.use(express.static(STATIC_DIR));
 
+app.use(`/`, homeRouter);
 app.use(`/login`, loginRouter);
 app.use(`/register`, registerRouter);
 app.use(`/my`, myRouter);
 app.use(`/search`, searchRouter);
 app.use(`/offers`, offersRouter);
-
-app.get(`/`, (req, res) => {
-  res.render(`./pages/main`);
-});
 
 app.listen(WORK_PORT, () =>
   console.log(`Сервер запущен на порту: ${WORK_PORT}`));
