@@ -3,8 +3,7 @@ extends ../layouts/main-layout
 block header
   header.header.header--logged
       .header__wrapper
-        a.header__logo.logo(href="/")
-          img(src="/img/logo.svg" width="179" height="34" alt="Логотип Куплю Продам")
+        include ../partials/logo
         nav.header__user-menu
           ul.header__list
             li.header__item

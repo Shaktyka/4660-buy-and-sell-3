@@ -1,87 +1,69 @@
 'use strict';
 
-const http = require(`http`);
-const log = require(`./../../paint-log.js`).log;
+const express = require(`express`);
 const fs = require(`fs`).promises;
+const log = require(`../../paint-log.js`).log;
 
 const DEFAULT_PORT = 3000;
 const MOCKS_FILE = `mocks.json`;
-const NOT_FOUND_MESSAGE = `Not found`;
-
-const HttpCode = {
-  OK: 200,
-  NOT_FOUND: 404,
-  INTERNAL_SERVER_ERROR: 500,
-  FORBIDDEN: 403,
-  UNAUTHORIZED: 401
-};
+const NOT_FOUND_MESSAGE = `Файл ${MOCKS_FILE} не найден`;
+const EMPTY_FILE_MESSAGE = `Файл ${MOCKS_FILE} пустой`;
+const DATA_SENT_MESSAGE = `Данные отправлены`;
 
 const ServerLogText = {
   ERROR: `Ошибка при создании сервера`,
-  CONNECT: `Ожидаю соединений на `
+  CONNECT: `Ожидаю соединений на порту`
 };
 
-// Отправляем ответ
-const sendResponse = (response, statusCode, message) => {
-  const template = `
-    <!Doctype html>
-      <html lang="ru">
-      <head>
-        <title>Mocks Data</title>
-      </head>
-      <body>${message}</body>
-    </html>`.trim();
+const app = express();
+const {Router} = require(`express`);
+const router = new Router();
 
-  response.statusCode = statusCode;
-  response.writeHead(statusCode, {
-    'Content-Type': `text/html; charset=UTF-8`,
-  });
+app.use(express.json());
+app.use(`/offers`, router);
 
-  response.end(template);
-};
+const readMockData = async () => {
+  let data = [];
 
-// Рендерим список данных для возвращения клиенту
-const renderContent = (offersArr) => {
-  let content = ``;
-  offersArr.forEach((offer) => {
-    if (offer.title.length > 0) {
-      content += `<li>${offer.title}</li>`;
+  try {
+    data = await fs.readFile(MOCKS_FILE, `utf8`);
+    if (data === ``) {
+      data = [];
+      log(EMPTY_FILE_MESSAGE, `error`, `error`);
     }
-  });
-  return `<ul>${content}</ul>`;
-};
-
-// Ответ сервера
-const onClientConnect = async (request, response) => {
-  switch (request.url) {
-    case `/`:
-      try {
-        const fileContent = await fs.readFile(MOCKS_FILE);
-        const mocksData = JSON.parse(fileContent);
-        sendResponse(response, HttpCode.OK, renderContent(mocksData));
-      } catch (err) {
-        sendResponse(response, HttpCode.NOT_FOUND, NOT_FOUND_MESSAGE);
-      }
-      break;
-    default:
-      sendResponse(response, HttpCode.NOT_FOUND, NOT_FOUND_MESSAGE);
-      break;
+  } catch (err) {
+    if (err.code === `ENOENT`) {
+      log(NOT_FOUND_MESSAGE, `error`, `error`);
+    } else {
+      log(err, `error`, `error`);
+    }
   }
+
+  return data;
 };
 
-// Экспорт
+router.use(`/`, (req, res) => {
+  const result = readMockData();
+
+  if (result instanceof Promise) {
+    result
+      .then((data) => {
+        res.json(data);
+        log(DATA_SENT_MESSAGE, `log`, `success`);
+      })
+      .catch((err) => log(err, `error`, `error`));
+  }
+});
+
 module.exports = {
   name: `--server`,
   run(args) {
     const port = Number.parseInt(args, 10) || DEFAULT_PORT;
-
-    http.createServer(onClientConnect)
-      .listen(port)
-      .on(`listening`, (err) => {
-        if (err) {
-          return console.error(ServerLogText.ERROR, err);
-        }
-        return log(ServerLogText.CONNECT + port, `info`, `success`);
-      });
+    app.listen(port, (err) => {
+      if (err) {
+        return console.error(ServerLogText.ERROR, err);
+      }
+      return console.log(`${ServerLogText.CONNECT} ${port}`);
+    });
   }
 };
