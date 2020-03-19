@@ -53,6 +53,7 @@ const getTypeOffer = () => {
 // Генерация одного объявления
 const generateOffer = (titles, categories, descriptions) => {
   return {
+    id: nanoid(6),
     title: titles[getRandomInt(0, titles.length - 1)],
     picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
     description: shuffleArray(descriptions).slice(0, getRandomInt(1, 4)).join(` `),
@@ -76,6 +77,10 @@ module.exports = {
     titlesData = await readContent(FilePath.TITLES);
     categoriesData = await readContent(FilePath.CATEGORIES);
     descriptionsData = await readContent(FilePath.DESCRIPTIONS);
+
+    titlesData = titlesData.filter((title) => title.length > 0);
+    categoriesData = categoriesData.filter((category) => category.length > 0);
+    descriptionsData = descriptionsData.filter((description) => description.length > 0);
 
     const amountOffers = Number.parseInt(args, 10) || DEFAULT_AMOUNT;
     const offersInJSON = JSON.stringify(generateOffers(amountOffers, titlesData, categoriesData, descriptionsData));
