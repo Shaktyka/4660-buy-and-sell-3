@@ -41,6 +41,11 @@ const CommentsRestrict = {
   MAX: 10,
 };
 
+const CommentsStringsRestrict = {
+  MIN: 1,
+  MAX: 4,
+};
+
 const offers = [];
 let titlesData = null;
 let categoriesData = null;
@@ -59,20 +64,23 @@ const getTypeOffer = () => {
 };
 
 // Генерация одного комментария
-const getComment = (text) => {
+const getComment = (commentTexts) => {
   return {
     id: nanoid(ID_SYMBOLS_AMOUNT),
-    text
+    text: commentTexts.join(` `)
   };
 };
 
 // Генерация массива комментариев
-const getComments = (commentStrings) => {
+const getComments = (array, amount) => {
   const comments = [];
-  commentStrings.forEach((commentString) => {
-    const commentObj = getComment(commentString);
+
+  for (let i = 0; i < amount; i++) {
+    const commentStrings = shuffleArray(array)
+      .slice(0, getRandomInt(CommentsStringsRestrict.MIN, CommentsStringsRestrict.MAX));
+    const commentObj = getComment(commentStrings);
     comments.push(commentObj);
-  });
+  }
   return comments;
 };
 
@@ -86,7 +94,7 @@ const generateOffer = (titles, categories, descriptions, comments) => {
     type: getTypeOffer(),
     sum: getRandomInt(PriceRestrict.MIN, PriceRestrict.MAX),
     category: shuffleArray(categories).slice(0, getRandomInt(1, 3)),
-    comments: getComments(shuffleArray(comments).slice(0, getRandomInt(CommentsRestrict.MIN, CommentsRestrict.MAX)))
+    comments: getComments(comments, getRandomInt(CommentsRestrict.MIN, CommentsRestrict.MAX))
   };
 };
 
