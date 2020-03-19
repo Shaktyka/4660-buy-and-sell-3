@@ -3,6 +3,7 @@
 const {getRandomInt, shuffleArray, readContent} = require(`../../utils`);
 const log = require(`../../paint-log.js`).log;
 const fs = require(`fs`).promises;
+const nanoid = require(`nanoid`);
 
 const DEFAULT_AMOUNT = 1;
 const FILE_NAME = `mocks.json`;
