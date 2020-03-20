@@ -2,8 +2,8 @@
 
 const express = require(`express`);
 
-// const categoriesRouter = require(`./routes/categories`);
-// const searchRouter = require(`./routes/search`);
+const categoriesRouter = require(`./routes/categories`);
+const searchRouter = require(`./routes/search`);
 const offersRouter = require(`./routes/offers`);
 
 const DEFAULT_PORT = 3000;
@@ -17,8 +17,8 @@ const app = express();
 app.use(express.json());
 
 app.use(`/offers`, offersRouter);
-// app.use(`/categories`, categoriesRouter);
-// app.use(`/search`, searchRouter);
+app.use(`/categories`, categoriesRouter);
+app.use(`/search`, searchRouter);
 
 app.use((req, res) => {
   res.status(404).send(`404: страница не найдена`);
