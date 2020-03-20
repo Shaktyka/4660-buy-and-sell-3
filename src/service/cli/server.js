@@ -1,14 +1,12 @@
 'use strict';
 
 const express = require(`express`);
-const fs = require(`fs`).promises;
-const log = require(`../../paint-log.js`).log;
+
+// const categoriesRouter = require(`./routes/categories`);
+// const searchRouter = require(`./routes/search`);
+const offersRouter = require(`./routes/offers`);
 
 const DEFAULT_PORT = 3000;
-const MOCKS_FILE = `mocks.json`;
-const NOT_FOUND_MESSAGE = `Файл ${MOCKS_FILE} не найден`;
-const EMPTY_FILE_MESSAGE = `Файл ${MOCKS_FILE} пустой`;
-const DATA_SENT_MESSAGE = `Данные отправлены`;
 
 const ServerLogText = {
   ERROR: `Ошибка при создании сервера`,
@@ -16,52 +14,19 @@ const ServerLogText = {
 };
 
 const app = express();
-const {Router} = require(`express`);
-const router = new Router();
-
 app.use(express.json());
-app.use(`/offers`, router);
 
-const readMockData = async () => {
-  let data = [];
+app.use(`/offers`, offersRouter);
+// app.use(`/categories`, categoriesRouter);
+// app.use(`/search`, searchRouter);
 
-  try {
-    data = await fs.readFile(MOCKS_FILE, `utf8`);
-    if (data === ``) {
-      data = [];
-      log(EMPTY_FILE_MESSAGE, `error`, `error`);
-    }
-  } catch (err) {
-    if (err.code === `ENOENT`) {
-      log(NOT_FOUND_MESSAGE, `error`, `error`);
-    } else {
-      log(err, `error`, `error`);
-    }
-  }
-
-  return data;
-};
-
-router.use(`/`, (req, res) => {
-  const result = readMockData();
-
-  if (result instanceof Promise) {
-    result
-      .then((data) => {
-        res.json(data);
-        log(DATA_SENT_MESSAGE, `log`, `success`);
-      })
-      .catch((err) => log(err, `error`, `error`));
-  }
+app.use((req, res) => {
+  res.status(404).send(`404: страница не найдена`);
 });
 
-app.use((req, res, next) => {
-  res.status(404).send('404: страница не найдена');
-});
-
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   console.error(err.stack);
-  res.status(500).send('500: на сервере что-то пошло не так...');
+  res.status(500).send(`500: на сервере что-то пошло не так...`);
 });
 
 module.exports = {
