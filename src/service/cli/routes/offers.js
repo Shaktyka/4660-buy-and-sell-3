@@ -59,6 +59,15 @@ const offers = {
     });
 
     return filteredList;
+  },
+
+  deleteComment: async (offerId, commentId) => {
+    const offer = await offers.getOffer(offerId);
+    offer.comments = offer.comments.filter((comment) => {
+      return comment.id !== commentId;
+    });
+
+    return offer;
   }
 };
 
@@ -132,7 +141,14 @@ offersRouter.delete(`/:offerId`, async (req, res) => {
 
 // Удаляет из объявления комментарий с id
 offersRouter.delete(`/:offerId/comments/:commentId`, async (req, res) => {
-  res.send(`delete new offer`);
+  const offerId = req.params.offerId.trim();
+  const commentId = req.params.commentId.trim();
+  if (offerId.length === 0 || commentId === 0) {
+    res.sendStatus(400);
+  }
+
+  const result = await offers.deleteComment(offerId, commentId);
+  res.json(result);
 });
 
 module.exports = offersRouter;
