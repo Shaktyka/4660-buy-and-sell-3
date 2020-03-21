@@ -72,11 +72,11 @@ const getComment = (commentTexts) => {
 };
 
 // Генерация массива комментариев
-const getComments = (array, amount) => {
+const getComments = (commentsArray, amount) => {
   const comments = [];
 
   for (let i = 0; i < amount; i++) {
-    const commentStrings = shuffleArray(array)
+    const commentStrings = shuffleArray(commentsArray)
       .slice(0, getRandomInt(CommentsStringsRestrict.MIN, CommentsStringsRestrict.MAX));
     const commentObj = getComment(commentStrings);
     comments.push(commentObj);
@@ -85,23 +85,23 @@ const getComments = (array, amount) => {
 };
 
 // Генерация одного объявления
-const generateOffer = (titles, categories, descriptions, comments) => {
+const generateOffer = () => {
   return {
     id: nanoid(ID_SYMBOLS_AMOUNT),
-    title: titles[getRandomInt(0, titles.length - 1)],
+    title: titlesData[getRandomInt(0, titlesData.length - 1)],
     picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
-    description: shuffleArray(descriptions).slice(0, getRandomInt(1, 4)).join(` `),
+    description: shuffleArray(descriptionsData).slice(0, getRandomInt(1, 4)).join(` `),
     type: getTypeOffer(),
     sum: getRandomInt(PriceRestrict.MIN, PriceRestrict.MAX),
-    category: shuffleArray(categories).slice(0, getRandomInt(1, 3)),
-    comments: getComments(comments, getRandomInt(CommentsRestrict.MIN, CommentsRestrict.MAX))
+    category: shuffleArray(categoriesData).slice(0, getRandomInt(1, 3)),
+    comments: getComments(commentsData, getRandomInt(CommentsRestrict.MIN, CommentsRestrict.MAX))
   };
 };
 
 // Генерация массива объявлений
-const generateOffers = (amount, titlesArray, categoriesArray, descriptionsArray, commentsArray) => {
+const generateOffers = (amount) => {
   for (let i = 0; i < amount; i++) {
-    offers.push(generateOffer(titlesArray, categoriesArray, descriptionsArray, commentsArray));
+    offers.push(generateOffer());
   }
   return offers;
 };
@@ -120,7 +120,7 @@ module.exports = {
     commentsData = commentsData.filter((comment) => comment.length > 0);
 
     const amountOffers = Number.parseInt(args, 10) || DEFAULT_AMOUNT;
-    const offersInJSON = JSON.stringify(generateOffers(amountOffers, titlesData, categoriesData, descriptionsData, commentsData));
+    const offersInJSON = JSON.stringify(generateOffers(amountOffers));
 
     try {
       await fs.writeFile(FILE_NAME, offersInJSON);
