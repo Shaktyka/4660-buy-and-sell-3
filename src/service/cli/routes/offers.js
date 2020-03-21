@@ -3,6 +3,7 @@
 const {Router} = require(`express`);
 const offersRouter = new Router();
 const readFileData = require(`../../../utils.js`).readFileData;
+const nanoid = require(`nanoid`);
 
 const MOCKS_FILE = `mocks.json`;
 // const log = require(`../../../paint-log.js`).log;
@@ -41,9 +42,14 @@ const offers = {
     }
 
     return comments;
+  },
+
+  addComment: async (id, comment) => {
+    const offer = await offers.getOffer(id);
+    offer.comments.push({id: nanoid(6), text: comment});
+    return offer;
   }
 };
-
 
 // //////////////// РОУТЫ ///////////////////////////
 
@@ -77,12 +83,24 @@ offersRouter.get(`/:offerId/comments`, async (req, res) => {
 
 // Создаёт новое объявление
 offersRouter.post(`/`, (req, res) => {
-  res.send(`new offer`);
+  const params = req.body;
+  // Дописать
+  res.json(params);
 });
 
 // Cоздаёт новый комментарий
-offersRouter.put(`/:offerId/comments`, (req, res) => {
-  res.send(`create new comment`);
+offersRouter.put(`/:offerId/comments`, async (req, res) => {
+  const offerId = req.params.offerId.trim();
+  if (offerId.length === 0) {
+    res.sendStatus(400);
+  }
+
+  // Коммент required! Минимум 20 символов;
+  // params.comment.length < 20
+  const params = req.body;
+
+  const result = await offers.addComment(offerId, params.comment);
+  res.json(result);
 });
 
 // Редактирует определённое объявление
