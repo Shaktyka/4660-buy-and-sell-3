@@ -48,6 +48,17 @@ const offers = {
     const offer = await offers.getOffer(id);
     offer.comments.push({id: nanoid(6), text: comment});
     return offer;
+  },
+
+  deleteOffer: async (id) => {
+    const offersList = await offers.getList();
+    const parsedList = JSON.parse(offersList);
+
+    const filteredList = parsedList.filter((offer) => {
+      return offer.id !== id;
+    });
+
+    return filteredList;
   }
 };
 
@@ -104,17 +115,23 @@ offersRouter.put(`/:offerId/comments`, async (req, res) => {
 });
 
 // Редактирует определённое объявление
-offersRouter.put(`/:offerId`, (req, res) => {
+offersRouter.put(`/:offerId`, async (req, res) => {
   res.send(`update new offer`);
 });
 
-// Удаляет определённое объявление
-offersRouter.delete(`/:offerId`, (req, res) => {
-  res.send(`delete new offer`);
+// Удаляет определённое объявление по id
+offersRouter.delete(`/:offerId`, async (req, res) => {
+  const offerId = req.params.offerId.trim();
+  if (offerId.length === 0) {
+    res.sendStatus(400);
+  }
+
+  const result = await offers.deleteOffer(offerId);
+  res.json(result);
 });
 
 // Удаляет из объявления комментарий с id
-offersRouter.delete(`/:offerId/comments/:commentId`, (req, res) => {
+offersRouter.delete(`/:offerId/comments/:commentId`, async (req, res) => {
   res.send(`delete new offer`);
 });
 
