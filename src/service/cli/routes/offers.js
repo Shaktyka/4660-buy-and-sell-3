@@ -58,7 +58,10 @@ const offers = {
   getOfferComments: async (id) => {
     let comments = [];
     const offer = await offers.getOffer(id);
-    console.log(offer);
+
+    if (offer.hasOwnProperty(`comments`)) {
+      comments = offer.comments;
+    }
 
     return comments;
   }
@@ -84,12 +87,11 @@ offersRouter.get(`/:offerId`, async (req, res) => {
   res.json(result);
 });
 
-// Получить комментарии выбранного объявления
+// Отдаёт комментарии выбранного объявления
 offersRouter.get(`/:offerId/comments`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   if (offerId.length === 0) {
     res.sendStatus(404);
-    return;
   }
 
   const result = await offers.getOfferComments(offerId);
