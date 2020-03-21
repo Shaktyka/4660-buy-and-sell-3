@@ -40,29 +40,24 @@ const offers = {
     return offersList;
   },
 
-  getOffer: (id) => {
+  getOffer: async (id) => {
     let offer = {};
-    const offersList = offers.getList();
+    const offersList = await offers.getList();
+    const parsedList = JSON.parse(offersList);
 
-    offersList.then((list) => {
-      const parsedList = JSON.parse(list);
-      for (let element of parsedList) {
-        if (element.id === id) {
-          offer = element;
-        } else {
-          break;
-        }
+    for (let i = 0; i < parsedList.length; i++) {
+      if (parsedList[i].id === id) {
+        offer = parsedList[i];
+        break;
       }
-      // console.log(1, offer);
-      return offer;
-    })
-    .catch((err) => log(err, `error`, `error`));
-    // return offer;
+    }
+
+    return offer;
   },
 
-  getOfferComments: (id) => {
+  getOfferComments: async (id) => {
     let comments = [];
-    const offer = offers.getOffer(id);
+    const offer = await offers.getOffer(id);
     console.log(offer);
 
     return comments;
@@ -72,25 +67,21 @@ const offers = {
 
 // РОУТЫ
 
+// Отдаёт список всех объявлений
 offersRouter.get(`/`, async (req, res) => {
   const result = await offers.getList();
   res.json(result);
 });
 
+// Отдаёт объявление по id
 offersRouter.get(`/:offerId`, async (req, res) => {
-
   const offerId = req.params.offerId.trim();
   if (offerId.length === 0) {
     res.sendStatus(404);
-    return;
   }
 
-  // const result = await offers.getOffer(offerId)
-  // .then((data) => {
-  //   console.log(3, data);
-  // });
-
-  // res.json(result);
+  const result = await offers.getOffer(offerId);
+  res.json(result);
 });
 
 // Получить комментарии выбранного объявления
