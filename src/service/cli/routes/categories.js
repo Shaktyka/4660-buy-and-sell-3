@@ -1,35 +1,14 @@
 'use strict';
 
-const fs = require(`fs`).promises;
 const log = require(`../../../paint-log.js`).log;
 const {Router} = require(`express`);
 const categoriesRouter = new Router();
+const readFileData = require(`../../../utils.js`).readFileData;
+
 const CATEGORIES_FILE = `data/categories.txt`;
-const NOT_FOUND_MESSAGE = `Файл ${CATEGORIES_FILE} не найден`;
-const EMPTY_FILE_MESSAGE = `Файл ${CATEGORIES_FILE} пустой`;
 const DATA_SENT_MESSAGE = `Данные отправлены`;
 
-const readFileData = (fileName) => {
-  let data = [];
-
-  try {
-    data = fs.readFile(fileName, `utf8`);
-    if (data === ``) {
-      data = [];
-      log(EMPTY_FILE_MESSAGE, `error`, `error`);
-    }
-  } catch (err) {
-    if (err.code === `ENOENT`) {
-      log(NOT_FOUND_MESSAGE, `error`, `error`);
-    } else {
-      log(err, `error`, `error`);
-    }
-  }
-
-  return data;
-};
-
-// Модель категорий
+// Модель
 const category = {
   get: async () => {
     let categories = await readFileData(CATEGORIES_FILE);

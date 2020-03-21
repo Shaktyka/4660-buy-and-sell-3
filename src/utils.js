@@ -3,6 +3,9 @@
 const log = require(`./paint-log.js`).log;
 const fs = require(`fs`).promises;
 
+const NOT_FOUND_MESSAGE = `Файл не найден`;
+const EMPTY_FILE_MESSAGE = `Файл пустой`;
+
 // Генерация рандомных чисел
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
@@ -30,8 +33,29 @@ const readContent = async (filePath) => {
   }
 };
 
+const readFileData = (fileName) => {
+  let data = [];
+
+  try {
+    data = fs.readFile(fileName, `utf8`);
+    if (data === ``) {
+      data = [];
+      log(EMPTY_FILE_MESSAGE, `error`, `error`);
+    }
+  } catch (err) {
+    if (err.code === `ENOENT`) {
+      log(NOT_FOUND_MESSAGE, `error`, `error`);
+    } else {
+      log(err, `error`, `error`);
+    }
+  }
+
+  return data;
+};
+
 module.exports = {
   getRandomInt,
   shuffleArray,
-  readContent
+  readContent,
+  readFileData
 };

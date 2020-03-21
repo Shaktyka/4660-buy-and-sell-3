@@ -1,37 +1,14 @@
 'use strict';
 
-const fs = require(`fs`).promises;
-const log = require(`../../../paint-log.js`).log;
 const {Router} = require(`express`);
 const offersRouter = new Router();
-// const Offer = require(`../models/offer.js`);
+const readFileData = require(`../../../utils.js`).readFileData;
 
 const MOCKS_FILE = `mocks.json`;
-const NOT_FOUND_MESSAGE = `Файл ${MOCKS_FILE} не найден`;
-const EMPTY_FILE_MESSAGE = `Файл ${MOCKS_FILE} пустой`;
+// const log = require(`../../../paint-log.js`).log;
 // const DATA_SENT_MESSAGE = `Данные отправлены`;
 
-const readFileData = (fileName) => {
-  let data = [];
-
-  try {
-    data = fs.readFile(fileName, `utf8`);
-    if (data === ``) {
-      data = [];
-      log(EMPTY_FILE_MESSAGE, `error`, `error`);
-    }
-  } catch (err) {
-    if (err.code === `ENOENT`) {
-      log(NOT_FOUND_MESSAGE, `error`, `error`);
-    } else {
-      log(err, `error`, `error`);
-    }
-  }
-
-  return data;
-};
-
-// МОДЕЛЬ
+// //////////////// МОДЕЛЬ ///////////////////////////
 
 // Объект offers
 const offers = {
@@ -68,7 +45,7 @@ const offers = {
 };
 
 
-// РОУТЫ
+// //////////////// РОУТЫ ///////////////////////////
 
 // Отдаёт список всех объявлений
 offersRouter.get(`/`, async (req, res) => {
@@ -103,6 +80,11 @@ offersRouter.post(`/`, (req, res) => {
   res.send(`new offer`);
 });
 
+// Cоздаёт новый комментарий
+offersRouter.put(`/:offerId/comments`, (req, res) => {
+  res.send(`create new comment`);
+});
+
 // Редактирует определённое объявление
 offersRouter.put(`/:offerId`, (req, res) => {
   res.send(`update new offer`);
@@ -110,6 +92,11 @@ offersRouter.put(`/:offerId`, (req, res) => {
 
 // Удаляет определённое объявление
 offersRouter.delete(`/:offerId`, (req, res) => {
+  res.send(`delete new offer`);
+});
+
+// Удаляет из объявления комментарий с id
+offersRouter.delete(`/:offerId/comments/:commentId`, (req, res) => {
   res.send(`delete new offer`);
 });
 
