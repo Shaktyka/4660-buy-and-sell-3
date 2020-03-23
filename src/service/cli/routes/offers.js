@@ -61,6 +61,14 @@ const offers = {
     return parsedList;
   },
 
+  updateOffer: async (id, offerData) => {
+    const offer = await offers.getOffer(id);
+    // Цикл по offer и обновление полей
+    
+ 
+    return offer;
+  },
+
   deleteOffer: async (id) => {
     const offersList = await offers.getList();
     const parsedList = JSON.parse(offersList);
@@ -101,7 +109,7 @@ offersRouter.get(`/:offerId`, async (req, res) => {
   res.json(result);
 });
 
-// Отдаёт комментарии выбранного объявления
+// Отдаёт комментарии объявления по id
 offersRouter.get(`/:offerId/comments`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   if (offerId.length === 0) {
@@ -139,12 +147,20 @@ offersRouter.put(`/:offerId/comments`, async (req, res) => {
   }
 });
 
-// Редактирует определённое объявление
+// Редактирует объявление по id
 offersRouter.put(`/:offerId`, async (req, res) => {
-  res.send(`update new offer`);
+  const offerId = req.params.offerId.trim();
+  if (offerId.length === 0) {
+    res.sendStatus(400);
+  }
+
+  const offerData = req.body;
+  const result = await offers.updateOffer(offerId, offerData);
+  // Возвращает список объявлений с обновлённым объявлением
+  res.json(result);
 });
 
-// Удаляет определённое объявление по id
+// Удаляет объявление по id
 offersRouter.delete(`/:offerId`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   if (offerId.length === 0) {
@@ -155,7 +171,7 @@ offersRouter.delete(`/:offerId`, async (req, res) => {
   res.json(result);
 });
 
-// Удаляет из объявления комментарий с id
+// Удаляет из объявления id комментарий с id
 offersRouter.delete(`/:offerId/comments/:commentId`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   const commentId = req.params.commentId.trim();
