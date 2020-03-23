@@ -20,6 +20,8 @@ const Message = {
 const MESSAGE_FAIL = `Ошибка сервера: не удалось получить данные`;
 const MESSAGE_BAD_REQUEST = `Неверный запрос`;
 
+const ID_SYMBOLS_AMOUNT = 6;
+
 // OFFERS
 const offers = {
   // Получаем весь список объявлений
@@ -40,7 +42,6 @@ const offers = {
         break;
       }
     }
-
     return offer;
   },
 
@@ -59,7 +60,10 @@ const offers = {
   // Добавляем комментарий в объявление по id
   addComment: async (id, comment) => {
     const offer = await offers.getOffer(id);
-    offer.comments.push({id: nanoid(6), text: comment});
+    // console.log(offer);
+    if (offer) {
+      offer.comments.push({id: nanoid(ID_SYMBOLS_AMOUNT), text: comment});
+    }
     return offer;
   },
 
@@ -69,7 +73,7 @@ const offers = {
     const parsedList = JSON.parse(offersList);
 
     const offerObject = offerData;
-    offerObject.id = nanoid(6);
+    offerObject.id = nanoid(ID_SYMBOLS_AMOUNT);
 
     parsedList.push(offerObject);
     return parsedList;
@@ -107,7 +111,7 @@ const offers = {
   }
 };
 
-// //////////////// РОУТЫ /////////////////////
+// ///////////// РОУТЫ //////////////////
 
 // Отдаёт список всех объявлений
 offersRouter.get(`/`, async (req, res) => {
@@ -167,7 +171,7 @@ offersRouter.post(`/`, async (req, res) => {
 offersRouter.put(`/:offerId`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   if (offerId.length === 0) {
-    res.sendStatus(400);
+    res.sendStatus(400).send(MESSAGE_BAD_REQUEST);
   }
 
   const offerData = req.body;
@@ -177,22 +181,20 @@ offersRouter.put(`/:offerId`, async (req, res) => {
   log(Message.OFFER_UPDATED, `log`, `success`);
 });
 
-// Cоздаёт новый комментарий
+// Cоздаёт новый комментарий для объявления с id
 offersRouter.put(`/:offerId/comments`, async (req, res) => {
   const offerId = req.params.offerId.trim();
-  if (offerId.length === 0) {
-    res.sendStatus(400);
-  }
-
-  // Коммент required! Минимум 20 символов;
-  // params.comment.length < 20
   const params = req.body;
-  if (params.comment.length >= 20) {
-    const result = await offers.addComment(offerId, params.comment);
-    res.json(result);
-    log(Message.COMMENT_CREATED, `log`, `success`);
-  } else {
-    res.sendStatus(400);
+
+  try {
+    if (offerId.length > 0 && params.comment.trim.length >= 20) {
+      const result = await offers.addComment(offerId, params.comment);
+      res.json(result);
+      log(Message.COMMENT_CREATED, `log`, `success`);
+    }
+  } catch (err) {
+    log(err, `error`, `error`);
+    res.status(500).send(MESSAGE_FAIL);
   }
 });
 
