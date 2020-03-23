@@ -1,9 +1,9 @@
 'use strict';
 
-const log = require(`../../../paint-log.js`).log;
 const {Router} = require(`express`);
 const categoriesRouter = new Router();
 const readFileData = require(`../../../utils.js`).readFileData;
+const log = require(`../../../paint-log.js`).log;
 
 const CATEGORIES_FILE = `data/categories.txt`;
 const DATA_SENT_MESSAGE = `Данные отправлены`;

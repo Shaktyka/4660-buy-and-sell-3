@@ -4,10 +4,18 @@ const {Router} = require(`express`);
 const offersRouter = new Router();
 const readFileData = require(`../../../utils.js`).readFileData;
 const nanoid = require(`nanoid`);
+const log = require(`../../../paint-log.js`).log;
 
 const MOCKS_FILE = `mocks.json`;
-// const log = require(`../../../paint-log.js`).log;
-// const DATA_SENT_MESSAGE = `Данные отправлены`;
+
+const Message = {
+  COMMENT_DELETED: `Комментарий удалён`,
+  OFFER_DELETED: `Объявление удалено`,
+  OFFER_UPDATED: `Объявление отредактировано`,
+  COMMENT_CREATED: `Комментарий добавлен`,
+  DATA_SENT: `Данные отправлены`,
+  OFFER_CREATED: `Объявление добавлено`
+};
 
 // //////////////// МОДЕЛЬ ///////////////////////////
 
@@ -64,8 +72,8 @@ const offers = {
   updateOffer: async (id, offerData) => {
     const offer = await offers.getOffer(id);
     // Цикл по offer и обновление полей
-    
- 
+
+
     return offer;
   },
 
@@ -90,12 +98,13 @@ const offers = {
   }
 };
 
-// //////////////// РОУТЫ ///////////////////////////
+// //////////////// РОУТЫ /////////////////////
 
 // Отдаёт список всех объявлений
 offersRouter.get(`/`, async (req, res) => {
   const result = await offers.getList();
   res.json(result);
+  log(Message.DATA_SENT, `log`, `success`);
 });
 
 // Отдаёт объявление по id
@@ -107,6 +116,7 @@ offersRouter.get(`/:offerId`, async (req, res) => {
 
   const result = await offers.getOffer(offerId);
   res.json(result);
+  log(Message.DATA_SENT, `log`, `success`);
 });
 
 // Отдаёт комментарии объявления по id
@@ -118,6 +128,7 @@ offersRouter.get(`/:offerId/comments`, async (req, res) => {
 
   const result = await offers.getOfferComments(offerId);
   res.json(result);
+  log(Message.DATA_SENT, `log`, `success`);
 });
 
 // Создаёт новое объявление
@@ -127,6 +138,7 @@ offersRouter.post(`/`, async (req, res) => {
   const result = await offers.addOffer(offerData);
   // Возвращает список объявлений с новым объявлением
   res.json(result);
+  log(Message.OFFER_CREATED, `log`, `success`);
 });
 
 // Cоздаёт новый комментарий
@@ -142,6 +154,7 @@ offersRouter.put(`/:offerId/comments`, async (req, res) => {
   if (params.comment.length >= 20) {
     const result = await offers.addComment(offerId, params.comment);
     res.json(result);
+    log(Message.COMMENT_CREATED, `log`, `success`);
   } else {
     res.sendStatus(400);
   }
@@ -156,8 +169,9 @@ offersRouter.put(`/:offerId`, async (req, res) => {
 
   const offerData = req.body;
   const result = await offers.updateOffer(offerId, offerData);
-  // Возвращает список объявлений с обновлённым объявлением
+
   res.json(result);
+  log(Message.OFFER_UPDATED, `log`, `success`);
 });
 
 // Удаляет объявление по id
@@ -169,6 +183,7 @@ offersRouter.delete(`/:offerId`, async (req, res) => {
 
   const result = await offers.deleteOffer(offerId);
   res.json(result);
+  log(Message.OFFER_DELETED, `log`, `success`);
 });
 
 // Удаляет из объявления id комментарий с id
@@ -181,6 +196,7 @@ offersRouter.delete(`/:offerId/comments/:commentId`, async (req, res) => {
 
   const result = await offers.deleteComment(offerId, commentId);
   res.json(result);
+  log(Message.COMMENT_DELETED, `log`, `success`);
 });
 
 module.exports = offersRouter;

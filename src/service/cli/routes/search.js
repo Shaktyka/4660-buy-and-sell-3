@@ -3,12 +3,11 @@
 const {Router} = require(`express`);
 const searchRouter = new Router();
 const readFileData = require(`../../../utils.js`).readFileData;
+const log = require(`../../../paint-log.js`).log;
 
 const MOCKS_FILE = `mocks.json`;
-// const DATA_SENT_MESSAGE = `Данные отправлены`;
-// const log = require(`../../../paint-log.js`).log;
+const DATA_SENT_MESSAGE = `Данные отправлены`;
 
-// Модель
 const search = {
   getList: async () => {
     const offersList = await readFileData(MOCKS_FILE);
@@ -31,7 +30,7 @@ const search = {
   }
 };
 
-// Поиск объяаления по наменованию
+// Поиск объявления по заголовкам
 searchRouter.get(`/`, async (req, res) => {
   const queryString = req.query.query.trim();
   if (queryString.length === 0) {
@@ -40,6 +39,7 @@ searchRouter.get(`/`, async (req, res) => {
 
   const result = await search.getMatches(queryString);
   res.json(result);
+  log(DATA_SENT_MESSAGE, `log`, `success`);
 });
 
 module.exports = searchRouter;
