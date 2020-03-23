@@ -181,6 +181,8 @@ offersRouter.put(`/:offerId`, async (req, res) => {
   log(Message.OFFER_UPDATED, `log`, `success`);
 });
 
+// //////////////////////////////////////////////
+
 // Cоздаёт новый комментарий для объявления с id
 offersRouter.put(`/:offerId/comments`, async (req, res) => {
   const offerId = req.params.offerId.trim();
@@ -197,8 +199,6 @@ offersRouter.put(`/:offerId/comments`, async (req, res) => {
     res.status(500).send(MESSAGE_FAIL);
   }
 });
-
-// //////////////////////////////////////////////
 
 // Удаляет объявление по id
 offersRouter.delete(`/:offerId`, async (req, res) => {
