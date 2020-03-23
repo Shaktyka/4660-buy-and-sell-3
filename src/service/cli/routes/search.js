@@ -6,7 +6,7 @@ const readFileData = require(`../../../utils.js`).readFileData;
 const log = require(`../../../paint-log.js`).log;
 
 const MOCKS_FILE = `mocks.json`;
-const DATA_SENT_MESSAGE = `Данные отправлены`;
+// const DATA_SENT_MESSAGE = `Данные отправлены`;
 
 const search = {
   getList: async () => {
@@ -34,12 +34,12 @@ const search = {
 searchRouter.get(`/`, async (req, res) => {
   const queryString = req.query.query.trim();
   if (queryString.length === 0) {
-    res.sendStatus(404);
+    res.status(404).send(`Данные не найдены`);
   }
 
   const result = await search.getMatches(queryString);
   res.json(result);
-  log(DATA_SENT_MESSAGE, `log`, `success`);
+  log(`...`, `log`, `success`);
 });
 
 module.exports = searchRouter;

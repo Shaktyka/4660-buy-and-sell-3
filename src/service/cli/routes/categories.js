@@ -7,12 +7,13 @@ const log = require(`../../../paint-log.js`).log;
 
 const CATEGORIES_FILE = `data/categories.txt`;
 const DATA_SENT_MESSAGE = `Данные отправлены`;
+const MESSAGE_FAIL = `Ошибка сервера: не удалось получить данные`;
 
 // Модель
 const category = {
   get: async () => {
     let categories = await readFileData(CATEGORIES_FILE);
-    categories = categories.split(`\n`).filter((it) => it.length > 0);
+    categories = categories.split(`\n`).filter((categoryName) => categoryName.length > 0);
     return categories;
   }
 };
@@ -24,7 +25,8 @@ categoriesRouter.get(`/`, async (req, res) => {
     res.json(response);
     log(DATA_SENT_MESSAGE, `log`, `success`);
   } catch (err) {
-    console.log(err);
+    log(err, `error`, `error`);
+    res.status(500).send(MESSAGE_FAIL);
   }
 });
 
