@@ -50,6 +50,17 @@ const offers = {
     return offer;
   },
 
+  addOffer: async (offerData) => {
+    const offersList = await offers.getList();
+    const parsedList = JSON.parse(offersList);
+
+    const offerObject = offerData;
+    offerObject.id = nanoid(6);
+
+    parsedList.push(offerObject);
+    return parsedList;
+  },
+
   deleteOffer: async (id) => {
     const offersList = await offers.getList();
     const parsedList = JSON.parse(offersList);
@@ -102,10 +113,12 @@ offersRouter.get(`/:offerId/comments`, async (req, res) => {
 });
 
 // Создаёт новое объявление
-offersRouter.post(`/`, (req, res) => {
-  const params = req.body;
-  // Дописать
-  res.json(params);
+offersRouter.post(`/`, async (req, res) => {
+  const offerData = req.body;
+  // Проверки полей
+  const result = await offers.addOffer(offerData);
+  // Возвращает список объявлений с новым объявлением
+  res.json(result);
 });
 
 // Cоздаёт новый комментарий
@@ -118,9 +131,12 @@ offersRouter.put(`/:offerId/comments`, async (req, res) => {
   // Коммент required! Минимум 20 символов;
   // params.comment.length < 20
   const params = req.body;
-
-  const result = await offers.addComment(offerId, params.comment);
-  res.json(result);
+  if (params.comment.length >= 20) {
+    const result = await offers.addComment(offerId, params.comment);
+    res.json(result);
+  } else {
+    res.sendStatus(400);
+  }
 });
 
 // Редактирует определённое объявление
