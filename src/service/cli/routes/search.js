@@ -6,6 +6,8 @@ const readFileData = require(`../../../utils.js`).readFileData;
 const log = require(`../../../paint-log.js`).log;
 
 const MOCKS_FILE = `mocks.json`;
+const MESSAGE_BAD_REQUEST = `Неверный запрос`;
+const MESSAGE_FAIL = `Ошибка сервера: не удалось получить данные`;
 // const DATA_SENT_MESSAGE = `Данные отправлены`;
 
 const search = {
@@ -30,16 +32,22 @@ const search = {
   }
 };
 
+// Не работает, нужно проверять
 // Поиск объявления по заголовкам
 searchRouter.get(`/`, async (req, res) => {
   const queryString = req.query.query.trim();
   if (queryString.length === 0) {
-    res.status(404).send(`Данные не найдены`);
+    res.status(400).send(MESSAGE_BAD_REQUEST);
   }
 
-  const result = await search.getMatches(queryString);
-  res.json(result);
-  log(`...`, `log`, `success`);
+  try {
+    const result = await search.getMatches(queryString);
+    res.json(result);
+    log(`...`, `log`, `success`);
+  } catch (err) {
+    log(err, `error`, `error`);
+    res.status(500).send(MESSAGE_FAIL);
+  }
 });
 
 module.exports = searchRouter;

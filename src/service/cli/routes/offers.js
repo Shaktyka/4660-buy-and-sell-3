@@ -17,15 +17,18 @@ const Message = {
   OFFER_CREATED: `Объявление добавлено`
 };
 
-// //////////////// МОДЕЛЬ ///////////////////////////
+const MESSAGE_FAIL = `Ошибка сервера: не удалось получить данные`;
+const MESSAGE_BAD_REQUEST = `Неверный запрос`;
 
-// Объект offers
+// OFFERS
 const offers = {
+  // Получаем весь список объявлений
   getList: async () => {
     const offersList = await readFileData(MOCKS_FILE);
     return offersList;
   },
 
+  // Получаем объявление по id
   getOffer: async (id) => {
     let offer = {};
     const offersList = await offers.getList();
@@ -41,6 +44,7 @@ const offers = {
     return offer;
   },
 
+  // Получаем список комментариев объявления по id
   getOfferComments: async (id) => {
     let comments = [];
     const offer = await offers.getOffer(id);
@@ -52,12 +56,14 @@ const offers = {
     return comments;
   },
 
+  // Добавляем комментарий в объявление по id
   addComment: async (id, comment) => {
     const offer = await offers.getOffer(id);
     offer.comments.push({id: nanoid(6), text: comment});
     return offer;
   },
 
+  // Добавляет новое объявление
   addOffer: async (offerData) => {
     const offersList = await offers.getList();
     const parsedList = JSON.parse(offersList);
@@ -69,6 +75,7 @@ const offers = {
     return parsedList;
   },
 
+  // Обновляет данные объявления по id
   updateOffer: async (id, offerData) => {
     const offer = await offers.getOffer(id);
     // Цикл по offer и обновление полей
@@ -77,6 +84,7 @@ const offers = {
     return offer;
   },
 
+  // Удаляет объявление по id
   deleteOffer: async (id) => {
     const offersList = await offers.getList();
     const parsedList = JSON.parse(offersList);
@@ -88,6 +96,7 @@ const offers = {
     return filteredList;
   },
 
+  // Удаляет комментарий по id в объявлении id
   deleteComment: async (offerId, commentId) => {
     const offer = await offers.getOffer(offerId);
     offer.comments = offer.comments.filter((comment) => {
@@ -102,21 +111,27 @@ const offers = {
 
 // Отдаёт список всех объявлений
 offersRouter.get(`/`, async (req, res) => {
-  const result = await offers.getList();
-  res.json(result);
-  log(Message.DATA_SENT, `log`, `success`);
+  try {
+    const result = await offers.getList();
+    res.json(result);
+    log(Message.DATA_SENT, `log`, `success`);
+  } catch (err) {
+    log(err, `error`, `error`);
+    res.status(500).send(MESSAGE_FAIL);
+  }
 });
 
 // Отдаёт объявление по id
 offersRouter.get(`/:offerId`, async (req, res) => {
-  const offerId = req.params.offerId.trim();
-  if (offerId.length === 0) {
-    res.sendStatus(404);
+  try {
+    const offerId = req.params.offerId.trim();
+    const result = await offers.getOffer(offerId);
+    res.json(result);
+    log(Message.DATA_SENT, `log`, `success`);
+  } catch (err) {
+    log(err, `error`, `error`);
+    res.status(500).send(MESSAGE_FAIL);
   }
-
-  const result = await offers.getOffer(offerId);
-  res.json(result);
-  log(Message.DATA_SENT, `log`, `success`);
 });
 
 // Отдаёт комментарии объявления по id
@@ -126,10 +141,17 @@ offersRouter.get(`/:offerId/comments`, async (req, res) => {
     res.sendStatus(404);
   }
 
-  const result = await offers.getOfferComments(offerId);
-  res.json(result);
-  log(Message.DATA_SENT, `log`, `success`);
+  try {
+    const result = await offers.getOfferComments(offerId);
+    res.json(result);
+    log(Message.DATA_SENT, `log`, `success`);
+  } catch (err) {
+    log(err, `error`, `error`);
+    res.status(500).send(MESSAGE_FAIL);
+  }
 });
+
+// //////////////////////////////////////////////
 
 // Создаёт новое объявление
 offersRouter.post(`/`, async (req, res) => {
@@ -139,6 +161,20 @@ offersRouter.post(`/`, async (req, res) => {
   // Возвращает список объявлений с новым объявлением
   res.json(result);
   log(Message.OFFER_CREATED, `log`, `success`);
+});
+
+// Редактирует объявление по id
+offersRouter.put(`/:offerId`, async (req, res) => {
+  const offerId = req.params.offerId.trim();
+  if (offerId.length === 0) {
+    res.sendStatus(400);
+  }
+
+  const offerData = req.body;
+  const result = await offers.updateOffer(offerId, offerData);
+
+  res.json(result);
+  log(Message.OFFER_UPDATED, `log`, `success`);
 });
 
 // Cоздаёт новый комментарий
@@ -160,30 +196,23 @@ offersRouter.put(`/:offerId/comments`, async (req, res) => {
   }
 });
 
-// Редактирует объявление по id
-offersRouter.put(`/:offerId`, async (req, res) => {
-  const offerId = req.params.offerId.trim();
-  if (offerId.length === 0) {
-    res.sendStatus(400);
-  }
-
-  const offerData = req.body;
-  const result = await offers.updateOffer(offerId, offerData);
-
-  res.json(result);
-  log(Message.OFFER_UPDATED, `log`, `success`);
-});
+// //////////////////////////////////////////////
 
 // Удаляет объявление по id
 offersRouter.delete(`/:offerId`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   if (offerId.length === 0) {
-    res.sendStatus(400);
+    res.status(400).send(MESSAGE_BAD_REQUEST);
   }
 
-  const result = await offers.deleteOffer(offerId);
-  res.json(result);
-  log(Message.OFFER_DELETED, `log`, `success`);
+  try {
+    const result = await offers.deleteOffer(offerId);
+    res.json(result);
+    log(Message.OFFER_DELETED, `log`, `success`);
+  } catch (err) {
+    log(err, `error`, `error`);
+    res.status(500).send(MESSAGE_FAIL);
+  }
 });
 
 // Удаляет из объявления id комментарий с id
@@ -191,12 +220,17 @@ offersRouter.delete(`/:offerId/comments/:commentId`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   const commentId = req.params.commentId.trim();
   if (offerId.length === 0 || commentId === 0) {
-    res.sendStatus(400);
+    res.sendStatus(400).send(MESSAGE_BAD_REQUEST);
   }
 
-  const result = await offers.deleteComment(offerId, commentId);
-  res.json(result);
-  log(Message.COMMENT_DELETED, `log`, `success`);
+  try {
+    const result = await offers.deleteComment(offerId, commentId);
+    res.json(result);
+    log(Message.COMMENT_DELETED, `log`, `success`);
+  } catch (err) {
+    log(err, `error`, `error`);
+    res.status(500).send(MESSAGE_FAIL);
+  }
 });
 
 module.exports = offersRouter;

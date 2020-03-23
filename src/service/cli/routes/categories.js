@@ -9,7 +9,6 @@ const CATEGORIES_FILE = `data/categories.txt`;
 const DATA_SENT_MESSAGE = `Данные отправлены`;
 const MESSAGE_FAIL = `Ошибка сервера: не удалось получить данные`;
 
-// Модель
 const category = {
   get: async () => {
     let categories = await readFileData(CATEGORIES_FILE);
