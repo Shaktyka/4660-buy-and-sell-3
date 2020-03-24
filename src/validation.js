@@ -46,9 +46,9 @@ const validityObject = {
 };
 
 const validation = {
-  validateComment: (dataObj) => {
+  validateComment: (comment) => {
     const validity = Object.assign({}, validityObject);
-    const commentLength = dataObj.comment.length;
+    const commentLength = comment.length;
 
     if (commentLength < CommentRequirements.minLength) {
       validity.isValid = false;

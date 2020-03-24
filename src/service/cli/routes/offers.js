@@ -95,13 +95,12 @@ offersRouter.put(`/:offerId`, async (req, res) => {
 offersRouter.put(`/:offerId/comments`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   const params = req.body;
-  if (offerId.length === 0) {
+  console.log(params);
+  if (offerId.length === 0 || !params.hasOwnProperty(`comment`)) {
     return res.sendStatus(400).send(MESSAGE_BAD_REQUEST);
   }
 
-  // Проверить, что поле comment существует
-
-  const validityResult = validation.validateComment(params);
+  const validityResult = validation.validateComment(params.comment);
 
   if (!validityResult.isValid) {
     return res.status(400).send(validityResult.errors);
