@@ -5,7 +5,7 @@ const express = require(`express`);
 const categoriesRouter = require(`./routes/categories`);
 const searchRouter = require(`./routes/search`);
 const offersRouter = require(`./routes/offers`);
-const formidableMiddleware = require(`express-formidable`);
+// const formidableMiddleware = require(`express-formidable`);
 
 const DEFAULT_PORT = 3000;
 
@@ -17,11 +17,11 @@ const ServerLogText = {
 const app = express();
 app.use(express.json());
 
-app.use(formidableMiddleware({
-  encoding: `utf-8`,
-  uploadDir: `./tmp`,
-  multiples: false,
-}));
+// app.use(formidableMiddleware({
+//   encoding: `utf-8`,
+//   uploadDir: `./tmp`,
+//   multiples: false,
+// }));
 
 app.use(`/offers`, offersRouter);
 app.use(`/categories`, categoriesRouter);

@@ -91,11 +91,13 @@ offersRouter.put(`/:offerId`, async (req, res) => {
   return res.json(result);
 });
 
+// //////////////////////////////////////////////
+
 // Cоздаёт новый комментарий для объявления с id
 offersRouter.put(`/:offerId/comments`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   const params = req.body;
-  console.log(params);
+
   if (offerId.length === 0 || !params.hasOwnProperty(`comment`)) {
     return res.sendStatus(400).send(MESSAGE_BAD_REQUEST);
   }
@@ -115,8 +117,6 @@ offersRouter.put(`/:offerId/comments`, async (req, res) => {
     return res.status(500).send(MESSAGE_FAIL);
   }
 });
-
-// //////////////////////////////////////////////
 
 // Удаляет объявление по id
 offersRouter.delete(`/:offerId`, async (req, res) => {
