@@ -5,6 +5,7 @@ const offersRouter = new Router();
 const nanoid = require(`nanoid`);
 const log = require(`../../../paint-log`).log;
 const offers = require(`../models/offers`);
+const validateOffer = require(`../../../validation`);
 
 const Message = {
   COMMENT_DELETED: `Комментарий удалён`,
@@ -66,11 +67,15 @@ offersRouter.get(`/:offerId/comments`, async (req, res) => {
 // Создаёт новое объявление
 offersRouter.post(`/`, async (req, res) => {
   const offerData = req.body;
-  // Проверки полей
-  const result = await offers.addOffer(offerData);
-  // Возвращает список объявлений с новым объявлением
-  res.json(result);
-  log(Message.OFFER_CREATED, `log`, `success`);
+  const isValid = validateOffer(offerData);
+  if (isValid) {
+    const result = await offers.addOffer(offerData);
+    // Возвращает список объявлений с новым объявлением
+    res.json(result);
+    log(Message.OFFER_CREATED, `log`, `success`);
+  } else {
+    // Отправляет массив ошибок
+  }
 });
 
 // Редактирует объявление по id
