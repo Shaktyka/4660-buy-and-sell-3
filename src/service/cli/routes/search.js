@@ -13,16 +13,16 @@ const DATA_SENT_MESSAGE = `Данные отправлены`;
 searchRouter.get(`/`, async (req, res) => {
   const queryString = req.query.query.trim();
   if (queryString.length === 0) {
-    res.status(400).send(MESSAGE_BAD_REQUEST);
+    return res.status(400).send(MESSAGE_BAD_REQUEST);
   }
 
   try {
     const result = await search.getMatches(queryString);
-    res.json(result);
     log(DATA_SENT_MESSAGE, `log`, `success`);
+    return res.json(result);
   } catch (err) {
     log(err, `error`, `error`);
-    res.status(500).send(MESSAGE_FAIL);
+    return res.status(500).send(MESSAGE_FAIL);
   }
 });
 

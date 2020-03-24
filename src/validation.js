@@ -62,7 +62,7 @@ const validation = {
   validateOffer: (dataObj) => {
     console.log(dataObj);
     const validity = Object.assign({}, validityObject);
-  
+
     return validity;
   }
 };

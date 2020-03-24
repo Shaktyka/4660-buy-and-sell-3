@@ -2,7 +2,6 @@
 
 const {Router} = require(`express`);
 const offersRouter = new Router();
-const nanoid = require(`nanoid`);
 const log = require(`../../../paint-log`).log;
 const offers = require(`../models/offers`);
 const validation = require(`../../../validation`);
