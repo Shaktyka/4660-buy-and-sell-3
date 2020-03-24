@@ -97,11 +97,16 @@ offersRouter.put(`/:offerId/comments`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   const params = req.body;
 
+  // Проверить, что поле comment существует
+
   const validityResult = validation.validateComment(params);
-  console.log(validityResult);
+
+  if (!validityResult.isValid) {
+    res.status(400).send(validityResult.errors);
+  }
 
   try {
-    if (offerId.length > 0 && params.comment.trim.length >= 20) {
+    if (offerId.length > 0) {
       const result = await offers.addComment(offerId, params.comment);
       res.json(result);
       log(Message.COMMENT_CREATED, `log`, `success`);
