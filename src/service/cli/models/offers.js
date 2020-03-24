@@ -1,6 +1,7 @@
 'use strict';
 
 const readFileData = require(`../../../utils.js`).readFileData;
+const nanoid = require(`nanoid`);
 
 const MOCKS_FILE = `mocks.json`;
 const ID_SYMBOLS_AMOUNT = 6;
@@ -64,7 +65,7 @@ const offers = {
   // Обновляет данные объявления по id
   updateOffer: async (id, offerData) => {
     const offer = await offers.getOffer(id);
-    // Цикл по offer и обновление полей
+    // Перебираем свойства offer и обновляем данные
 
 
     return offer;

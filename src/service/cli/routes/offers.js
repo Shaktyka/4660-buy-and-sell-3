@@ -5,7 +5,7 @@ const offersRouter = new Router();
 const nanoid = require(`nanoid`);
 const log = require(`../../../paint-log`).log;
 const offers = require(`../models/offers`);
-// const validateOffer = require(`../../../validation`);
+const validation = require(`../../../validation`);
 
 const Message = {
   COMMENT_DELETED: `Комментарий удалён`,
@@ -65,16 +65,16 @@ offersRouter.get(`/:offerId/comments`, async (req, res) => {
 // //////////////// Доделать //////////////////////////////
 
 // Создаёт новое объявление
-offersRouter.post(`/`, async (req, res) => {
+offersRouter.post(`/`, (req, res) => {
   const offerData = req.body;
-  const isValid = validateOffer(offerData);
-  if (isValid) {
-    // const result = await offers.addOffer(offerData);
+  const validityResult = validation.validateOffer(offerData);
+  if (validityResult.isValid) {
+    const result = offers.addOffer(offerData);
     // Возвращает список объявлений с новым объявлением
-    res.json(result);
-    log(Message.OFFER_CREATED, `log`, `success`);
+    // res.json(result);
+    // log(Message.OFFER_CREATED, `log`, `success`);
   } else {
-    // Отправляет массив ошибок
+    // Отправить массив ошибок validityResult.errors
   }
 });
 
@@ -92,12 +92,13 @@ offersRouter.put(`/:offerId`, async (req, res) => {
   log(Message.OFFER_UPDATED, `log`, `success`);
 });
 
-// //////////////////////////////////////////////
-
 // Cоздаёт новый комментарий для объявления с id
 offersRouter.put(`/:offerId/comments`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   const params = req.body;
+
+  const validityResult = validation.validateComment(params);
+  console.log(validityResult);
 
   try {
     if (offerId.length > 0 && params.comment.trim.length >= 20) {
@@ -110,6 +111,8 @@ offersRouter.put(`/:offerId/comments`, async (req, res) => {
     res.status(500).send(MESSAGE_FAIL);
   }
 });
+
+// //////////////////////////////////////////////
 
 // Удаляет объявление по id
 offersRouter.delete(`/:offerId`, async (req, res) => {

@@ -2,11 +2,11 @@
 
 // Правила валидации
 const ValidationTexts = {
-  minLength: `Минимальное количество символов должно быть `,
-  maxLength: `Максимальное количество символов должно быть `,
+  minLength: `Минимальное количество символов должно быть`,
+  maxLength: `Максимальное количество символов должно быть`,
   required: `Поле обязательно для заполнения`,
-  minValue: `Минимальное значение должно быть `,
-  allowedTypes: `Значениями поля могут быть `
+  minValue: `Минимальное значение должно быть`,
+  allowedTypes: `Значениями поля могут быть`
 };
 
 const CommentRequirements = {
@@ -40,26 +40,31 @@ const OfferRequirements = {
   }
 };
 
-const validateComment = (comment) => {
-  const validity = {
-    errors: [],
-    isValid: true
-  };
-
-  return validity;
+const validityObject = {
+  errors: [],
+  isValid: true
 };
 
-const validateOffer = (data) => {
-  const validity = {
-    errors: [],
-    isValid: true
-  };
+const validation = {
+  validateComment: (dataObj) => {
+    const validity = Object.assign({}, validityObject);
+    const commentLength = dataObj.comment.length;
+
+    if (commentLength < CommentRequirements.minLength) {
+      validity.isValid = false;
+      validity.errors.push({
+        comment: `${ValidationTexts.minLength} ${CommentRequirements.minLength}`
+      });
+    }
+    return validity;
+  },
+
+  validateOffer: (dataObj) => {
+    console.log(dataObj);
+    const validity = Object.assign({}, validityObject);
   
-
-  return validity;
+    return validity;
+  }
 };
 
-module.exports = {
-  validateOffer, 
-  validateComment
-};
+module.exports = validation;
