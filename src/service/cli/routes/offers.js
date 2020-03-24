@@ -23,11 +23,11 @@ const MESSAGE_BAD_REQUEST = `Неверный запрос`;
 offersRouter.get(`/`, async (req, res) => {
   try {
     const result = await offers.getList();
-    res.json(result);
     log(Message.DATA_SENT, `log`, `success`);
+    return res.json(result);
   } catch (err) {
     log(err, `error`, `error`);
-    res.status(500).send(MESSAGE_FAIL);
+    return res.status(500).send(MESSAGE_FAIL);
   }
 });
 
@@ -36,11 +36,11 @@ offersRouter.get(`/:offerId`, async (req, res) => {
   try {
     const offerId = req.params.offerId.trim();
     const result = await offers.getOffer(offerId);
-    res.json(result);
     log(Message.DATA_SENT, `log`, `success`);
+    return res.json(result);
   } catch (err) {
     log(err, `error`, `error`);
-    res.status(500).send(MESSAGE_FAIL);
+    return res.status(500).send(MESSAGE_FAIL);
   }
 });
 
@@ -48,16 +48,16 @@ offersRouter.get(`/:offerId`, async (req, res) => {
 offersRouter.get(`/:offerId/comments`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   if (offerId.length === 0) {
-    res.sendStatus(404);
+    return res.sendStatus(404);
   }
 
   try {
     const result = await offers.getOfferComments(offerId);
-    res.json(result);
     log(Message.DATA_SENT, `log`, `success`);
+    return res.json(result);
   } catch (err) {
     log(err, `error`, `error`);
-    res.status(500).send(MESSAGE_FAIL);
+    return res.status(500).send(MESSAGE_FAIL);
   }
 });
 
@@ -70,7 +70,7 @@ offersRouter.post(`/`, (req, res) => {
   if (validityResult.isValid) {
     const result = offers.addOffer(offerData);
     // Возвращает список объявлений с новым объявлением
-    // res.json(result);
+    // return res.json(result);
     // log(Message.OFFER_CREATED, `log`, `success`);
   } else {
     // Отправить массив ошибок validityResult.errors
@@ -81,38 +81,39 @@ offersRouter.post(`/`, (req, res) => {
 offersRouter.put(`/:offerId`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   if (offerId.length === 0) {
-    res.sendStatus(400).send(MESSAGE_BAD_REQUEST);
+    return res.sendStatus(400).send(MESSAGE_BAD_REQUEST);
   }
 
   const offerData = req.body;
   const result = await offers.updateOffer(offerId, offerData);
 
-  res.json(result);
   log(Message.OFFER_UPDATED, `log`, `success`);
+  return res.json(result);
 });
 
 // Cоздаёт новый комментарий для объявления с id
 offersRouter.put(`/:offerId/comments`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   const params = req.body;
+  if (offerId.length === 0) {
+    return res.sendStatus(400).send(MESSAGE_BAD_REQUEST);
+  }
 
   // Проверить, что поле comment существует
 
   const validityResult = validation.validateComment(params);
 
   if (!validityResult.isValid) {
-    res.status(400).send(validityResult.errors);
+    return res.status(400).send(validityResult.errors);
   }
 
   try {
-    if (offerId.length > 0) {
-      const result = await offers.addComment(offerId, params.comment);
-      res.json(result);
-      log(Message.COMMENT_CREATED, `log`, `success`);
-    }
+    const result = await offers.addComment(offerId, params.comment);
+    log(Message.COMMENT_CREATED, `log`, `success`);
+    return res.json(result);
   } catch (err) {
     log(err, `error`, `error`);
-    res.status(500).send(MESSAGE_FAIL);
+    return res.status(500).send(MESSAGE_FAIL);
   }
 });
 
@@ -122,16 +123,16 @@ offersRouter.put(`/:offerId/comments`, async (req, res) => {
 offersRouter.delete(`/:offerId`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   if (offerId.length === 0) {
-    res.status(400).send(MESSAGE_BAD_REQUEST);
+    return res.status(400).send(MESSAGE_BAD_REQUEST);
   }
 
   try {
     const result = await offers.deleteOffer(offerId);
-    res.json(result);
     log(Message.OFFER_DELETED, `log`, `success`);
+    return res.json(result);
   } catch (err) {
     log(err, `error`, `error`);
-    res.status(500).send(MESSAGE_FAIL);
+    return res.status(500).send(MESSAGE_FAIL);
   }
 });
 
@@ -140,16 +141,16 @@ offersRouter.delete(`/:offerId/comments/:commentId`, async (req, res) => {
   const offerId = req.params.offerId.trim();
   const commentId = req.params.commentId.trim();
   if (offerId.length === 0 || commentId === 0) {
-    res.sendStatus(400).send(MESSAGE_BAD_REQUEST);
+    return res.sendStatus(400).send(MESSAGE_BAD_REQUEST);
   }
 
   try {
     const result = await offers.deleteComment(offerId, commentId);
-    res.json(result);
     log(Message.COMMENT_DELETED, `log`, `success`);
+    return res.json(result);
   } catch (err) {
     log(err, `error`, `error`);
-    res.status(500).send(MESSAGE_FAIL);
+    return res.status(500).send(MESSAGE_FAIL);
   }
 });
 

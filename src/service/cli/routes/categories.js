@@ -12,11 +12,11 @@ const MESSAGE_FAIL = `Ошибка сервера: не удалось полу�
 categoriesRouter.get(`/`, async (req, res) => {
   try {
     let response = await category.get();
-    res.json(response);
     log(DATA_SENT_MESSAGE, `log`, `success`);
+    return res.json(response);
   } catch (err) {
     log(err, `error`, `error`);
-    res.status(500).send(MESSAGE_FAIL);
+    return res.status(500).send(MESSAGE_FAIL);
   }
 });
 
