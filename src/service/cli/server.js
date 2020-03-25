@@ -1,10 +1,7 @@
 'use strict';
 
 const express = require(`express`);
-
-const categoriesRouter = require(`./routes/categories`);
-const searchRouter = require(`./routes/search`);
-const offersRouter = require(`./routes/offers`);
+const apiRouter = require(`./routes/api`);
 // const formidableMiddleware = require(`express-formidable`);
 
 const DEFAULT_PORT = 3000;
@@ -24,9 +21,7 @@ app.use(express.urlencoded({extended: false}));
 //   multiples: false,
 // }));
 
-app.use(`/offers`, offersRouter);
-app.use(`/categories`, categoriesRouter);
-app.use(`/search`, searchRouter);
+app.use(`/api`, apiRouter);
 
 app.use((req, res) => {
   res.status(404).send(`404: страница не найдена`);
