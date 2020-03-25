@@ -96,20 +96,20 @@ offersRouter.put(`/:offerId`, async (req, res) => {
 // Cоздаёт новый комментарий для объявления с id
 offersRouter.put(`/:offerId/comments`, async (req, res) => {
   const offerId = req.params.offerId.trim();
-  const params = req.body;
+  const {comment} = req.body;
 
-  if (offerId.length === 0 || !params.hasOwnProperty(`comment`)) {
+  if (offerId.length === 0 || !comment) {
     return res.sendStatus(400).send(MESSAGE_BAD_REQUEST);
   }
 
-  const validityResult = validation.validateComment(params.comment);
+  const validityResult = validation.validateComment(comment);
 
   if (!validityResult.isValid) {
     return res.status(400).send(validityResult.errors);
   }
 
   try {
-    const result = await offers.addComment(offerId, params.comment);
+    const result = await offers.addComment(offerId, comment);
     log(Message.COMMENT_CREATED, `log`, `success`);
     return res.json(result);
   } catch (err) {
