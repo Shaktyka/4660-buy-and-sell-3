@@ -16,6 +16,7 @@ const ServerLogText = {
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({extended: false}));
 
 // app.use(formidableMiddleware({
 //   encoding: `utf-8`,

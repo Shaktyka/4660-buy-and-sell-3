@@ -13,16 +13,18 @@ const CommentRequirements = {
   minLength: 20
 };
 
+// const IMG_EXTENTIONS = ['JPG'];
+
 const OfferRequirements = {
-  img: {
+  avatar: {
     required: true
   },
-  title: {
+  ticketName: {
     required: true,
     minLength: 10,
     maxLength: 100
   },
-  text: {
+  comment: {
     required: true,
     minLength: 50,
     maxLength: 1000
@@ -34,11 +36,13 @@ const OfferRequirements = {
     required: true,
     minValue: 100
   },
-  type: {
+  action: {
     required: true,
-    allowedTypes: [`Куплю`, `Продам`]
+    allowedTypes: [`buy`, `sell`]
   }
 };
+
+const allowImgTypes = [`image/jpeg`, `image/png`];
 
 const validityObject = {
   errors: [],
@@ -48,9 +52,8 @@ const validityObject = {
 const validation = {
   validateComment: (comment) => {
     const validity = Object.assign({}, validityObject);
-    const commentLength = comment.length;
 
-    if (commentLength < CommentRequirements.minLength) {
+    if (comment.length < CommentRequirements.minLength) {
       validity.isValid = false;
       validity.errors.push({
         comment: `${ValidationTexts.minLength} ${CommentRequirements.minLength}`
@@ -59,9 +62,35 @@ const validation = {
     return validity;
   },
 
-  validateOffer: (dataObj) => {
-    console.log(dataObj);
+  validateOffer: (offerData) => {
     const validity = Object.assign({}, validityObject);
+    // const {type, size, path, name} = offerData.files.avatar;
+
+    const avatar = offerData.avatar.trim();
+    const ticketName = offerData[`ticket-name`].trim();
+    const comment = offerData.comment.trim();
+    const category = offerData.category.trim();
+    const price = offerData.price.trim();
+    const action = offerData.action.trim();
+
+    // console.log(ticketName);
+    // Проверить наличие файла
+    // проверить длину, тип, размер
+    if (avatar.length === 0) {
+      validity.isValid = false;
+      validity.errors.push({
+        avatar: `${ValidationTexts.required}`
+      });
+    }
+
+    // Проверка заголовка
+    
+
+    // Проверка категории
+
+    // Проверка цены
+
+    // Проверка action
 
     return validity;
   }

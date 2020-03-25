@@ -66,15 +66,25 @@ offersRouter.get(`/:offerId/comments`, async (req, res) => {
 // Создаёт новое объявление
 offersRouter.post(`/`, (req, res) => {
   const offerData = req.body;
+  // console.log(offerData);
+
   const validityResult = validation.validateOffer(offerData);
-  if (validityResult.isValid) {
-    const result = offers.addOffer(offerData);
+  
+  // if (validityResult.isValid) {
+    // const result = offers.addOffer(offerData);
     // Возвращает список объявлений с новым объявлением
     // return res.json(result);
     // log(Message.OFFER_CREATED, `log`, `success`);
-  } else {
+  // } else {
     // Отправить массив ошибок validityResult.errors
-  }
+  // }
+
+  // try {
+    
+  // } catch (err) {
+  //   log(err, `error`, `error`);
+  //   return res.status(500).send(MESSAGE_FAIL);
+  // }
 });
 
 // Редактирует объявление по id
