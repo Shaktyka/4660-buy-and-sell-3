@@ -28,10 +28,20 @@ const HttpCode = {
 const DATA_SENT_MESSAGE = `Данные отправлены`;
 const SERVER_ERROR_MESSAGE = `Ошибка сервера`;
 const EMPTY_REQUEST_MESSAGE = `Пустая строка запроса`;
+const MESSAGE_BAD_REQUEST = `Неверный запрос`;
 
 const ServerLogText = {
   ERROR: `Ошибка при создании сервера`,
   CONNECT: `Ожидаю соединений на порту`
+};
+
+const ResultMessage = {
+  COMMENT_DELETED: `Комментарий удалён`,
+  OFFER_DELETED: `Объявление удалено`,
+  OFFER_UPDATED: `Объявление отредактировано`,
+  COMMENT_CREATED: `Комментарий добавлен`,
+  DATA_SENT: `Данные отправлены`,
+  OFFER_CREATED: `Объявление добавлено`
 };
 
 module.exports = {
@@ -45,5 +55,7 @@ module.exports = {
   ServerLogText,
   DATA_SENT_MESSAGE,
   SERVER_ERROR_MESSAGE,
-  EMPTY_REQUEST_MESSAGE
+  EMPTY_REQUEST_MESSAGE,
+  MESSAGE_BAD_REQUEST,
+  ResultMessage
 };

@@ -8,192 +8,194 @@ const validation = require(`../../../validation`);
 const asyncHandler = require(`express-async-handler`);
 const createError = require(`http-errors`);
 
-const Message = {
-  COMMENT_DELETED: `Комментарий удалён`,
-  OFFER_DELETED: `Объявление удалено`,
-  OFFER_UPDATED: `Объявление отредактировано`,
-  COMMENT_CREATED: `Комментарий добавлен`,
-  DATA_SENT: `Данные отправлены`,
-  OFFER_CREATED: `Объявление добавлено`
-};
+const {
+  HttpCode,
+  SERVER_ERROR_MESSAGE,
+  MESSAGE_BAD_REQUEST,
+  ResultMessage
+} = require(`../../../constants`);
 
-const MESSAGE_FAIL = `Ошибка сервера: не удалось получить данные`;
-const MESSAGE_BAD_REQUEST = `Неверный запрос`;
-
-// https://habr.com/ru/company/ruvds/blog/476290/ - обработка ошибок в экспресс
+const NO_ID_MESSAGE = `Не передан id`;
 
 // Отдаёт список всех объявлений
-offersRouter.get(`/`, asyncHandler(async (req, res, next) => {
-  const result = await offers.getList();
-
-  if (!result) {
-    return next(new Error(`Bad request`));
-  } else {
-    log(Message.DATA_SENT, `log`, `success`);
+offersRouter.get(`/`, asyncHandler(async (req, res) => {
+  try {
+    const result = await offers.getList();
+    log(ResultMessage.DATA_SENT, `log`, `success`);
     res.json(result);
+  } catch (err) {
+    throw createError(
+        HttpCode.INTERNAL_SERVER_ERROR,
+        {message: SERVER_ERROR_MESSAGE}
+    );
   }
-  
-  // try {
-  //   const result = await offers.getList();
-  //   log(Message.DATA_SENT, `log`, `success`);
-  //   return res.json(result);
-  // } catch (err) {
-  //   log(err, `error`, `error`);
-  //   return res.status(500).send(MESSAGE_FAIL);
-  // }
-  // if (!result) {
-  //   throw createError(400, `Bad request`);
-  // } else {
-  //   log(Message.DATA_SENT, `log`, `success`);
-  //   res.json(result);
-  // }
 }));
 
 // Отдаёт объявление по id
-offersRouter.get(`/:offerId`, async (req, res) => {
+offersRouter.get(`/:offerId`, asyncHandler(async (req, res) => {
   try {
     const offerId = req.params.offerId.trim();
     const result = await offers.getOffer(offerId);
-    log(Message.DATA_SENT, `log`, `success`);
+    log(ResultMessage.DATA_SENT, `log`, `success`);
     return res.json(result);
   } catch (err) {
     log(err, `error`, `error`);
-    return res.status(500).send(MESSAGE_FAIL);
+    throw createError(
+        HttpCode.INTERNAL_SERVER_ERROR,
+        {message: SERVER_ERROR_MESSAGE}
+    );
   }
-});
+}));
 
 // Отдаёт комментарии объявления по id
-offersRouter.get(`/:offerId/comments`, async (req, res, next) => {
+offersRouter.get(`/:offerId/comments`, asyncHandler(async (req, res) => {
   const offerId = req.params.offerId.trim();
   if (offerId.length === 0) {
-    throw createError(400, `Bad request`, {message: `Не передан id`});
+    throw createError(
+        HttpCode.BAD_REQUEST,
+        {message: NO_ID_MESSAGE}
+    );
   }
 
-  const result = await offers.getOfferComments(offerId);
-
-  if (!result) {
-    log(err, `error`, `error`);
-    throw createError(400, `Объявление не найдено`);
-  } else {
-    log(Message.DATA_SENT, `log`, `success`);
-    return res.json(result);
+  try {
+    const result = await offers.getOfferComments(offerId);
+    log(ResultMessage.DATA_SENT, `log`, `success`);
+    res.json(result);
+  } catch (err) {
+    throw createError(
+        HttpCode.INTERNAL_SERVER_ERROR,
+        {message: SERVER_ERROR_MESSAGE}
+    );
   }
-
-  // const offerId = req.params.offerId.trim();
-  // if (offerId.length === 0) {
-  //   return res.sendStatus(404);
-  // }
-
-  // try {
-  //   const result = await offers.getOfferComments(offerId);
-  //   log(Message.DATA_SENT, `log`, `success`);
-  //   return res.json(result);
-  // } catch (err) {
-  //   log(err, `error`, `error`);
-  //   return res.status(500).send(MESSAGE_FAIL);
-  // }
-});
+}));
 
 // //////////////// Доделать //////////////////////////////
 
 // Создаёт новое объявление
-offersRouter.post(`/`, (req, res) => {
+offersRouter.post(`/`, asyncHandler(async (req, res) => {
   const offerData = req.body;
   // console.log(offerData);
+  // validation.validateOffer(offerData);
 
-  const validityResult = validation.validateOffer(offerData);
-
-  // if (validityResult.isValid) {
-  // const result = offers.addOffer(offerData);
-  // Возвращает список объявлений с новым объявлением
-  // return res.json(result);
-  // log(Message.OFFER_CREATED, `log`, `success`);
-  // } else {
-  // Отправить массив ошибок validityResult.errors
-  // }
-
-  // try {
-
-  // } catch (err) {
-  //   log(err, `error`, `error`);
-  //   return res.status(500).send(MESSAGE_FAIL);
-  // }
-});
+  try {
+    // const validityResult = true;
+    const result = offers.addOffer(offerData);
+    log(ResultMessage.OFFER_CREATED, `log`, `success`);
+    res.json(result);
+  } catch (err) {
+    log(err, `error`, `error`);
+    throw createError(
+        HttpCode.INTERNAL_SERVER_ERROR,
+        {message: err.message}
+    );
+  }
+}));
 
 // Редактирует объявление по id
-offersRouter.put(`/:offerId`, async (req, res) => {
+offersRouter.put(`/:offerId`, asyncHandler(async (req, res) => {
   const offerId = req.params.offerId.trim();
   if (offerId.length === 0) {
-    return res.sendStatus(400).send(MESSAGE_BAD_REQUEST);
+    throw createError(
+        HttpCode.BAD_REQUEST,
+        {message: NO_ID_MESSAGE}
+    );
   }
 
-  const offerData = req.body;
-  const result = await offers.updateOffer(offerId, offerData);
-
-  log(Message.OFFER_UPDATED, `log`, `success`);
-  return res.json(result);
-});
+  try {
+    const offerData = req.body;
+    const result = await offers.updateOffer(offerId, offerData);
+    log(ResultMessage.OFFER_UPDATED, `log`, `success`);
+    res.json(result);
+  } catch (err) {
+    log(err, `error`, `error`);
+    throw createError(
+        HttpCode.INTERNAL_SERVER_ERROR,
+        {message: err.message}
+    );
+  }
+}));
 
 // //////////////////////////////////////////////
 
 // Cоздаёт новый комментарий для объявления с id
-offersRouter.put(`/:offerId/comments`, async (req, res) => {
+offersRouter.put(`/:offerId/comments`, asyncHandler(async (req, res) => {
   const offerId = req.params.offerId.trim();
   const {comment} = req.body;
 
   if (offerId.length === 0 || !comment) {
-    return res.sendStatus(400).send(MESSAGE_BAD_REQUEST);
+    throw createError(
+        HttpCode.BAD_REQUEST,
+        {message: MESSAGE_BAD_REQUEST}
+    );
   }
 
   const validityResult = validation.validateComment(comment);
 
   if (!validityResult.isValid) {
-    return res.status(400).send(validityResult.errors);
+    throw createError(
+        HttpCode.BAD_REQUEST,
+        {message: validityResult.errors}
+    );
   }
 
   try {
     const result = await offers.addComment(offerId, comment);
-    log(Message.COMMENT_CREATED, `log`, `success`);
-    return res.json(result);
+    log(ResultMessage.COMMENT_CREATED, `log`, `success`);
+    res.json(result);
   } catch (err) {
     log(err, `error`, `error`);
-    return res.status(500).send(MESSAGE_FAIL);
+    throw createError(
+        HttpCode.INTERNAL_SERVER_ERROR,
+        {message: SERVER_ERROR_MESSAGE}
+    );
   }
-});
+}));
 
 // Удаляет объявление по id
-offersRouter.delete(`/:offerId`, async (req, res) => {
+offersRouter.delete(`/:offerId`, asyncHandler(async (req, res) => {
   const offerId = req.params.offerId.trim();
   if (offerId.length === 0) {
-    return res.status(400).send(MESSAGE_BAD_REQUEST);
+    throw createError(
+        HttpCode.BAD_REQUEST,
+        {message: NO_ID_MESSAGE}
+    );
   }
 
   try {
     const result = await offers.deleteOffer(offerId);
-    log(Message.OFFER_DELETED, `log`, `success`);
-    return res.json(result);
+    log(ResultMessage.OFFER_DELETED, `log`, `success`);
+    res.json(result);
   } catch (err) {
     log(err, `error`, `error`);
-    return res.status(500).send(MESSAGE_FAIL);
+    throw createError(
+        HttpCode.INTERNAL_SERVER_ERROR,
+        {message: SERVER_ERROR_MESSAGE}
+    );
   }
-});
+}));
 
 // Удаляет из объявления id комментарий с id
-offersRouter.delete(`/:offerId/comments/:commentId`, async (req, res) => {
+offersRouter.delete(`/:offerId/comments/:commentId`, asyncHandler(async (req, res) => {
   const offerId = req.params.offerId.trim();
   const commentId = req.params.commentId.trim();
   if (offerId.length === 0 || commentId === 0) {
-    return res.sendStatus(400).send(MESSAGE_BAD_REQUEST);
+    throw createError(
+        HttpCode.BAD_REQUEST,
+        {message: MESSAGE_BAD_REQUEST}
+    );
   }
 
   try {
     const result = await offers.deleteComment(offerId, commentId);
-    log(Message.COMMENT_DELETED, `log`, `success`);
-    return res.json(result);
+    log(ResultMessage.COMMENT_DELETED, `log`, `success`);
+    res.json(result);
   } catch (err) {
     log(err, `error`, `error`);
-    return res.status(500).send(MESSAGE_FAIL);
+    throw createError(
+        HttpCode.INTERNAL_SERVER_ERROR,
+        {message: SERVER_ERROR_MESSAGE}
+    );
   }
-});
+}));
 
 module.exports = offersRouter;
