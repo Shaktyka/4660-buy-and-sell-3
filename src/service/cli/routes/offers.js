@@ -5,6 +5,8 @@ const offersRouter = new Router();
 const log = require(`../../../paint-log`).log;
 const offers = require(`../models/offers`);
 const validation = require(`../../../validation`);
+const asyncHandler = require(`express-async-handler`);
+const createError = require(`http-errors`);
 
 const Message = {
   COMMENT_DELETED: `Комментарий удалён`,
@@ -18,18 +20,34 @@ const Message = {
 const MESSAGE_FAIL = `Ошибка сервера: не удалось получить данные`;
 const MESSAGE_BAD_REQUEST = `Неверный запрос`;
 
+// https://habr.com/ru/company/ruvds/blog/476290/ - обработка ошибок в экспресс
 
 // Отдаёт список всех объявлений
-offersRouter.get(`/`, async (req, res) => {
-  try {
-    const result = await offers.getList();
+offersRouter.get(`/`, asyncHandler(async (req, res, next) => {
+  const result = await offers.getList();
+
+  if (!result) {
+    return next(new Error(`Bad request`));
+  } else {
     log(Message.DATA_SENT, `log`, `success`);
-    return res.json(result);
-  } catch (err) {
-    log(err, `error`, `error`);
-    return res.status(500).send(MESSAGE_FAIL);
+    res.json(result);
   }
-});
+  
+  // try {
+  //   const result = await offers.getList();
+  //   log(Message.DATA_SENT, `log`, `success`);
+  //   return res.json(result);
+  // } catch (err) {
+  //   log(err, `error`, `error`);
+  //   return res.status(500).send(MESSAGE_FAIL);
+  // }
+  // if (!result) {
+  //   throw createError(400, `Bad request`);
+  // } else {
+  //   log(Message.DATA_SENT, `log`, `success`);
+  //   res.json(result);
+  // }
+}));
 
 // Отдаёт объявление по id
 offersRouter.get(`/:offerId`, async (req, res) => {
@@ -45,20 +63,35 @@ offersRouter.get(`/:offerId`, async (req, res) => {
 });
 
 // Отдаёт комментарии объявления по id
-offersRouter.get(`/:offerId/comments`, async (req, res) => {
+offersRouter.get(`/:offerId/comments`, async (req, res, next) => {
   const offerId = req.params.offerId.trim();
   if (offerId.length === 0) {
-    return res.sendStatus(404);
+    throw createError(400, `Bad request`, {message: `Не передан id`});
   }
 
-  try {
-    const result = await offers.getOfferComments(offerId);
+  const result = await offers.getOfferComments(offerId);
+
+  if (!result) {
+    log(err, `error`, `error`);
+    throw createError(400, `Объявление не найдено`);
+  } else {
     log(Message.DATA_SENT, `log`, `success`);
     return res.json(result);
-  } catch (err) {
-    log(err, `error`, `error`);
-    return res.status(500).send(MESSAGE_FAIL);
   }
+
+  // const offerId = req.params.offerId.trim();
+  // if (offerId.length === 0) {
+  //   return res.sendStatus(404);
+  // }
+
+  // try {
+  //   const result = await offers.getOfferComments(offerId);
+  //   log(Message.DATA_SENT, `log`, `success`);
+  //   return res.json(result);
+  // } catch (err) {
+  //   log(err, `error`, `error`);
+  //   return res.status(500).send(MESSAGE_FAIL);
+  // }
 });
 
 // //////////////// Доделать //////////////////////////////

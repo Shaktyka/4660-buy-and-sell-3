@@ -2,6 +2,7 @@
 
 const express = require(`express`);
 const apiRouter = require(`./routes/api`);
+const createError = require(`http-errors`);
 // const formidableMiddleware = require(`express-formidable`);
 
 const DEFAULT_PORT = 3000;
@@ -23,13 +24,21 @@ app.use(express.urlencoded({extended: false}));
 
 app.use(`/api`, apiRouter);
 
-app.use((req, res) => {
-  res.status(404).send(`404: страница не найдена`);
+// Обработчики ошибок
+app.use((req, res, next) => {
+  next(createError(404, `Not found`));
 });
 
-app.use((err, req, res) => {
-  console.error(err.stack);
-  res.status(500).send(`500: на сервере что-то пошло не так...`);
+app.use((err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(err.status || 500);
+  res.json({
+    status: err.status,
+    message: err.message,
+    stack: err.stack
+  });
 });
 
 module.exports = {
