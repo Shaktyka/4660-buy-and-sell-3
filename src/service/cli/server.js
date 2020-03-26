@@ -3,14 +3,10 @@
 const express = require(`express`);
 const apiRouter = require(`./routes/api`);
 const createError = require(`http-errors`);
+const {ServerLogText, HttpCode} = require(`../../constants`);
 // const formidableMiddleware = require(`express-formidable`);
 
 const DEFAULT_PORT = 3000;
-
-const ServerLogText = {
-  ERROR: `Ошибка при создании сервера`,
-  CONNECT: `Ожидаю соединений на порту`
-};
 
 const app = express();
 app.use(express.json());
@@ -33,8 +29,8 @@ app.use((err, req, res, next) => {
   if (res.headersSent) {
     return next(err);
   }
-  res.status(err.status || 500);
-  res.json({
+  res.status(err.status || HttpCode.INTERNAL_SERVER_ERROR);
+  return res.json({
     status: err.status,
     message: err.message,
     stack: err.stack
