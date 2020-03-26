@@ -20,9 +20,8 @@ app.use(express.urlencoded({extended: false}));
 
 app.use(`/api`, apiRouter);
 
-// Обработчики ошибок
 app.use((req, res, next) => {
-  next(createError(404, `Not found`));
+  next(createError(HttpCode.NOT_FOUND, `Not found`));
 });
 
 app.use((err, req, res, next) => {
@@ -32,8 +31,7 @@ app.use((err, req, res, next) => {
   res.status(err.status || HttpCode.INTERNAL_SERVER_ERROR);
   return res.json({
     status: err.status,
-    message: err.message,
-    stack: err.stack
+    message: err.message
   });
 });
 
