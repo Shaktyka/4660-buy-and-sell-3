@@ -6,11 +6,12 @@ const log = require(`../../../paint-log.js`).log;
 const search = require(`../models/search`);
 const asyncHandler = require(`express-async-handler`);
 const createError = require(`http-errors`);
-const {HttpCode} = require(`../../../constants`);
-
-const MESSAGE_BAD_REQUEST = `Неверный запрос`;
-const EMPTY_REQUEST_MESSAGE = `Пустая строка запроса`;
-const DATA_SENT_MESSAGE = `Данные отправлены`;
+const {
+  HttpCode,
+  EMPTY_REQUEST_MESSAGE,
+  DATA_SENT_MESSAGE,
+  SERVER_ERROR_MESSAGE
+} = require(`../../../constants`);
 
 // Поиск объявления по заголовкам
 searchRouter.get(`/`, asyncHandler(async (req, res) => {
@@ -25,7 +26,7 @@ searchRouter.get(`/`, asyncHandler(async (req, res) => {
     res.json(result);
   } catch (err) {
     log(err, `error`, `error`);
-    throw createError(HttpCode.INTERNAL_SERVER_ERROR, MESSAGE_BAD_REQUEST);
+    throw createError(HttpCode.INTERNAL_SERVER_ERROR, SERVER_ERROR_MESSAGE);
   }
 }));
 

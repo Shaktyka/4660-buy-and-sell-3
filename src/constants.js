@@ -25,6 +25,10 @@ const HttpCode = {
   INTERNAL_SERVER_ERROR: 500
 };
 
+const DATA_SENT_MESSAGE = `Данные отправлены`;
+const SERVER_ERROR_MESSAGE = `Ошибка сервера`;
+const EMPTY_REQUEST_MESSAGE = `Пустая строка запроса`;
+
 const ServerLogText = {
   ERROR: `Ошибка при создании сервера`,
   CONNECT: `Ожидаю соединений на порту`
@@ -38,5 +42,8 @@ module.exports = {
   ExitCode,
   Message,
   HttpCode,
-  ServerLogText
+  ServerLogText,
+  DATA_SENT_MESSAGE,
+  SERVER_ERROR_MESSAGE,
+  EMPTY_REQUEST_MESSAGE
 };
