@@ -25,6 +25,8 @@ const HttpCode = {
   INTERNAL_SERVER_ERROR: 500
 };
 
+const NO_ID_MESSAGE = `Не передан id`;
+
 const DATA_SENT_MESSAGE = `Данные отправлены`;
 const SERVER_ERROR_MESSAGE = `Ошибка сервера`;
 const EMPTY_REQUEST_MESSAGE = `Пустая строка запроса`;
@@ -57,5 +59,6 @@ module.exports = {
   SERVER_ERROR_MESSAGE,
   EMPTY_REQUEST_MESSAGE,
   MESSAGE_BAD_REQUEST,
-  ResultMessage
+  ResultMessage,
+  NO_ID_MESSAGE
 };

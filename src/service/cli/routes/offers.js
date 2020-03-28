@@ -14,15 +14,55 @@ const {
   HttpCode,
   SERVER_ERROR_MESSAGE,
   MESSAGE_BAD_REQUEST,
-  ResultMessage
+  ResultMessage,
+  NO_ID_MESSAGE
 } = require(`../../../constants`);
-
-const NO_ID_MESSAGE = `Не передан id`;
 
 const CommentRequirement = {
   minLength: {
     VALUE: 20,
     ERROR_TEXT: `Минимальное количество символов: `
+  }
+};
+
+const OfferRequirement = {
+  avatar: {
+    imgType: {
+      VALUE: [`image/jpeg`, `image/png`],
+      ERROR_TEXT: `Неразрешённый тип данных`
+    }
+  },
+  ticketName: {
+    minLength: {
+      VALUE: 10,
+      ERROR_TEXT: `Не менее 10 символов`
+    },
+    maxLength: {
+      VALUE: 100,
+      ERROR_TEXT: `Не более 100 символов`
+    }
+  },
+  comment: {
+    minLength: {
+      VALUE: 50,
+      ERROR_TEXT: `Не менее 50 символов`
+    },
+    maxLength: {
+      VALUE: 1000,
+      ERROR_TEXT: `Не более 1000 символов`
+    }
+  },
+  price: {
+    minValue: {
+      VALUE: 100,
+      ERROR_TEXT: `Не менее 100`
+    }
+  },
+  action: {
+    allowedTypes: {
+      VALUE: [`buy`, `sell`],
+      ERROR_TEXT: `Неразрешённое значение`
+    }
   }
 };
 
