@@ -4,7 +4,9 @@ const {Router} = require(`express`);
 const offersRouter = new Router();
 const log = require(`../../../paint-log`).log;
 const offers = require(`../models/offers`);
-const validation = require(`../../../validation`);
+const {check, validationResult} = require(`express-validator`);
+// const {body, validationResult} = require(`express-validator/check`);
+// const validation = require(`../../../validation`);
 const asyncHandler = require(`express-async-handler`);
 const createError = require(`http-errors`);
 
@@ -16,6 +18,13 @@ const {
 } = require(`../../../constants`);
 
 const NO_ID_MESSAGE = `Не передан id`;
+
+const CommentRequirement = {
+  minLength: {
+    VALUE: 20,
+    ERROR_TEXT: `Минимальное количество символов: `
+  }
+};
 
 // Отдаёт список всех объявлений
 offersRouter.get(`/`, asyncHandler(async (req, res) => {
@@ -118,30 +127,27 @@ offersRouter.put(`/:offerId`, asyncHandler(async (req, res) => {
 // //////////////////////////////////////////////
 
 // Cоздаёт новый комментарий для объявления с id
-offersRouter.put(`/:offerId/comments`, asyncHandler(async (req, res) => {
+offersRouter.put(`/:offerId/comments`, [
+  check(`comment`)
+    .not().isEmpty()
+    .trim()
+    .escape()
+    .isLength({min: CommentRequirement.minLength.VALUE})
+    .withMessage(CommentRequirement.minLength.ERROR_TEXT + CommentRequirement.minLength.VALUE)
+], asyncHandler(async (req, res) => {
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(HttpCode.BAD_REQUEST).json({errors: errors.array()});
+  }
+
   const offerId = req.params.offerId.trim();
   const {comment} = req.body;
-
-  if (offerId.length === 0 || !comment) {
-    throw createError(
-        HttpCode.BAD_REQUEST,
-        {message: MESSAGE_BAD_REQUEST}
-    );
-  }
-
-  const validityResult = validation.validateComment(comment);
-
-  if (!validityResult.isValid) {
-    throw createError(
-        HttpCode.BAD_REQUEST,
-        {message: validityResult.errors}
-    );
-  }
 
   try {
     const result = await offers.addComment(offerId, comment);
     log(ResultMessage.COMMENT_CREATED, `log`, `success`);
-    res.json(result);
+    return res.json(result);
   } catch (err) {
     log(err, `error`, `error`);
     throw createError(
