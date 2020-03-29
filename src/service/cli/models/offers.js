@@ -63,7 +63,7 @@ const offers = {
   },
 
   // Обновляет данные объявления по id
-  updateOffer: async (id, offerData) => {
+  updateOffer: async (id) => {
     const offer = await offers.getOffer(id);
     // Перебираем свойства offer и обновляем данные
 
