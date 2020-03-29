@@ -63,10 +63,15 @@ const offers = {
   },
 
   // Обновляет данные объявления по id
-  updateOffer: async (id) => {
+  updateOffer: async (id, offerData) => {
     const offer = await offers.getOffer(id);
-    // Перебираем свойства offer и обновляем данные
 
+    offer.title = offerData[`ticket-name`];
+    offer.picture = offerData.avatar;
+    offer.description = offerData.comment;
+    offer.type = offerData.action;
+    offer.sum = offerData.price;
+    offer.category = offerData.category;
 
     return offer;
   },
