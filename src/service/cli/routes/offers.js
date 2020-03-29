@@ -23,9 +23,11 @@ const CommentRequirement = {
   }
 };
 
+const REQUIRE_ERROR_TEXT = `Нужно заполнить поле`;
+
 const OfferRequirement = {
   avatar: {
-    imgType: {
+    allowedType: {
       VALUE: [`jpeg`, `jpg`, `png`],
       ERROR_TEXT: `Неразрешённый тип данных`
     }
@@ -57,9 +59,15 @@ const OfferRequirement = {
     }
   },
   action: {
-    allowedTypes: {
+    allowedType: {
       VALUE: [`buy`, `sell`],
       ERROR_TEXT: `Неразрешённое значение`
+    }
+  },
+  category: {
+    allowedType: {
+      VALUE: [1, 2, 3, 4],
+      ERROR_TEXT: `Нужно выбрать 1 или более категорий`
     }
   }
 };
@@ -69,49 +77,48 @@ const OfferRequirement = {
 // Создаёт новое объявление
 offersRouter.post(`/`, [
   check(`ticket-name`)
-    .not().isEmpty().withMessage(`Нужно заполнить поле`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
     .trim()
     .escape()
     .isLength({min: OfferRequirement.ticketName.minLength.VALUE})
     .withMessage(`${OfferRequirement.ticketName.minLength.ERROR_TEXT} ${OfferRequirement.ticketName.minLength.VALUE}`)
     .isLength({max: OfferRequirement.ticketName.maxLength.VALUE})
     .withMessage(`${OfferRequirement.ticketName.maxLength.ERROR_TEXT} ${OfferRequirement.ticketName.maxLength.VALUE}`),
-  // check(`avatar`)
-  //   .not().isEmpty()
-  //   .trim()
-  //   .escape()
-  //   .withMessage(`Нужно загрузить изображение в формате jpg или png`),
+  check(`avatar`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .trim()
+    .escape(),
+  // .isIn(OfferRequirement.avatar.allowedType.VALUE)
+  // .withMessage(`${OfferRequirement.avatar.allowedType.ERROR_TEXT}`)
   check(`comment`)
-    .not().isEmpty().withMessage(`Нужно заполнить поле`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
     .trim()
     .escape()
     .isLength({min: OfferRequirement.comment.minLength.VALUE})
     .withMessage(`${OfferRequirement.comment.minLength.ERROR_TEXT} ${OfferRequirement.comment.minLength.VALUE}`)
     .isLength({max: OfferRequirement.comment.maxLength.VALUE})
     .withMessage(`${OfferRequirement.comment.maxLength.ERROR_TEXT} ${OfferRequirement.comment.maxLength.VALUE}`),
-  // ,
-  // check(`action`)
-  //   .not().isEmpty()
-  //   .trim()
-  //   .escape()
-  //   .isLength({min: 5})
-  //   .withMessage(),
-  // check(`price`)
-  //   .not().isEmpty()
-  //   .trim()
-  //   .escape()
-  //   .isLength({min: 5})
-  //   .withMessage(),
+  check(`action`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .trim()
+    .escape()
+    .isIn(OfferRequirement.action.allowedType.VALUE)
+    .withMessage(`${OfferRequirement.action.allowedType.ERROR_TEXT}`),
+  check(`price`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .trim()
+    .escape()
+    .isInt({min: 100})
+    .withMessage(`${OfferRequirement.price.minValue.ERROR_TEXT} ${OfferRequirement.price.minValue.VALUE}`)
   // check(`category`)
-  //   .not().isEmpty()
+  //   .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
   //   .trim()
   //   .escape()
-  //   .isLength({min: 5})
-  //   .withMessage()
+  //   .isIn(OfferRequirement.category.allowedType.VALUE)
+  //   .withMessage(`${OfferRequirement.category.allowedType.ERROR_TEXT}`)
 ], asyncHandler(async (req, res) => {
   const offerData = req.body;
   console.log(offerData);
-  // validation.validateOffer(offerData);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
