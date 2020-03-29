@@ -5,8 +5,6 @@ const offersRouter = new Router();
 const log = require(`../../../paint-log`).log;
 const offers = require(`../models/offers`);
 const {check, validationResult} = require(`express-validator`);
-// const {body, validationResult} = require(`express-validator/check`);
-// const validation = require(`../../../validation`);
 const asyncHandler = require(`express-async-handler`);
 const createError = require(`http-errors`);
 
@@ -21,41 +19,41 @@ const {
 const CommentRequirement = {
   minLength: {
     VALUE: 20,
-    ERROR_TEXT: `Минимальное количество символов: `
+    ERROR_TEXT: `Минимальное количество символов`
   }
 };
 
 const OfferRequirement = {
   avatar: {
     imgType: {
-      VALUE: [`image/jpeg`, `image/png`],
+      VALUE: [`jpeg`, `jpg`, `png`],
       ERROR_TEXT: `Неразрешённый тип данных`
     }
   },
   ticketName: {
     minLength: {
       VALUE: 10,
-      ERROR_TEXT: `Не менее 10 символов`
+      ERROR_TEXT: `Минимальное количество символов`
     },
     maxLength: {
       VALUE: 100,
-      ERROR_TEXT: `Не более 100 символов`
+      ERROR_TEXT: `Максимальное количество символов`
     }
   },
   comment: {
     minLength: {
       VALUE: 50,
-      ERROR_TEXT: `Не менее 50 символов`
+      ERROR_TEXT: `Минимальное количество символов`
     },
     maxLength: {
       VALUE: 1000,
-      ERROR_TEXT: `Не более 1000 символов`
+      ERROR_TEXT: `Максимальное количество символов`
     }
   },
   price: {
     minValue: {
       VALUE: 100,
-      ERROR_TEXT: `Не менее 100`
+      ERROR_TEXT: `Не менее`
     }
   },
   action: {
@@ -65,6 +63,100 @@ const OfferRequirement = {
     }
   }
 };
+
+// //////////////// Доделать //////////////////////////////
+
+// Создаёт новое объявление
+offersRouter.post(`/`, [
+  check(`ticket-name`)
+    .not().isEmpty().withMessage(`Нужно заполнить поле`)
+    .trim()
+    .escape()
+    .isLength({min: OfferRequirement.ticketName.minLength.VALUE})
+    .withMessage(`${OfferRequirement.ticketName.minLength.ERROR_TEXT} ${OfferRequirement.ticketName.minLength.VALUE}`)
+    .isLength({max: OfferRequirement.ticketName.maxLength.VALUE})
+    .withMessage(`${OfferRequirement.ticketName.maxLength.ERROR_TEXT} ${OfferRequirement.ticketName.maxLength.VALUE}`),
+  // check(`avatar`)
+  //   .not().isEmpty()
+  //   .trim()
+  //   .escape()
+  //   .withMessage(`Нужно загрузить изображение в формате jpg или png`),
+  check(`comment`)
+    .not().isEmpty().withMessage(`Нужно заполнить поле`)
+    .trim()
+    .escape()
+    .isLength({min: OfferRequirement.comment.minLength.VALUE})
+    .withMessage(`${OfferRequirement.comment.minLength.ERROR_TEXT} ${OfferRequirement.comment.minLength.VALUE}`)
+    .isLength({max: OfferRequirement.comment.maxLength.VALUE})
+    .withMessage(`${OfferRequirement.comment.maxLength.ERROR_TEXT} ${OfferRequirement.comment.maxLength.VALUE}`),
+  // ,
+  // check(`action`)
+  //   .not().isEmpty()
+  //   .trim()
+  //   .escape()
+  //   .isLength({min: 5})
+  //   .withMessage(),
+  // check(`price`)
+  //   .not().isEmpty()
+  //   .trim()
+  //   .escape()
+  //   .isLength({min: 5})
+  //   .withMessage(),
+  // check(`category`)
+  //   .not().isEmpty()
+  //   .trim()
+  //   .escape()
+  //   .isLength({min: 5})
+  //   .withMessage()
+], asyncHandler(async (req, res) => {
+  const offerData = req.body;
+  console.log(offerData);
+  // validation.validateOffer(offerData);
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(HttpCode.BAD_REQUEST).json({errors: errors.array()});
+  }
+
+  try {
+    // const validityResult = true;
+    const result = offers.addOffer(offerData);
+    log(ResultMessage.OFFER_CREATED, `log`, `success`);
+    return res.json(result);
+  } catch (err) {
+    log(err, `error`, `error`);
+    throw createError(
+        HttpCode.INTERNAL_SERVER_ERROR,
+        {message: err.message}
+    );
+  }
+}));
+
+// Редактирует объявление по id
+offersRouter.put(`/:offerId`, asyncHandler(async (req, res) => {
+  const offerId = req.params.offerId.trim();
+  if (offerId.length === 0) {
+    throw createError(
+        HttpCode.BAD_REQUEST,
+        {message: NO_ID_MESSAGE}
+    );
+  }
+
+  try {
+    const offerData = req.body;
+    const result = await offers.updateOffer(offerId, offerData);
+    log(ResultMessage.OFFER_UPDATED, `log`, `success`);
+    res.json(result);
+  } catch (err) {
+    log(err, `error`, `error`);
+    throw createError(
+        HttpCode.INTERNAL_SERVER_ERROR,
+        {message: err.message}
+    );
+  }
+}));
+
+// //////////////////////////////////////////////
 
 // Отдаёт список всех объявлений
 offersRouter.get(`/`, asyncHandler(async (req, res) => {
@@ -118,54 +210,6 @@ offersRouter.get(`/:offerId/comments`, asyncHandler(async (req, res) => {
   }
 }));
 
-// //////////////// Доделать //////////////////////////////
-
-// Создаёт новое объявление
-offersRouter.post(`/`, asyncHandler(async (req, res) => {
-  const offerData = req.body;
-  // console.log(offerData);
-  // validation.validateOffer(offerData);
-
-  try {
-    // const validityResult = true;
-    const result = offers.addOffer(offerData);
-    log(ResultMessage.OFFER_CREATED, `log`, `success`);
-    res.json(result);
-  } catch (err) {
-    log(err, `error`, `error`);
-    throw createError(
-        HttpCode.INTERNAL_SERVER_ERROR,
-        {message: err.message}
-    );
-  }
-}));
-
-// Редактирует объявление по id
-offersRouter.put(`/:offerId`, asyncHandler(async (req, res) => {
-  const offerId = req.params.offerId.trim();
-  if (offerId.length === 0) {
-    throw createError(
-        HttpCode.BAD_REQUEST,
-        {message: NO_ID_MESSAGE}
-    );
-  }
-
-  try {
-    const offerData = req.body;
-    const result = await offers.updateOffer(offerId, offerData);
-    log(ResultMessage.OFFER_UPDATED, `log`, `success`);
-    res.json(result);
-  } catch (err) {
-    log(err, `error`, `error`);
-    throw createError(
-        HttpCode.INTERNAL_SERVER_ERROR,
-        {message: err.message}
-    );
-  }
-}));
-
-// //////////////////////////////////////////////
-
 // Cоздаёт новый комментарий для объявления с id
 offersRouter.put(`/:offerId/comments`, [
   check(`comment`)
@@ -173,7 +217,7 @@ offersRouter.put(`/:offerId/comments`, [
     .trim()
     .escape()
     .isLength({min: CommentRequirement.minLength.VALUE})
-    .withMessage(CommentRequirement.minLength.ERROR_TEXT + CommentRequirement.minLength.VALUE)
+    .withMessage(`CommentRequirement.minLength.ERROR_TEXT CommentRequirement.minLength.VALUE`)
 ], asyncHandler(async (req, res) => {
 
   const errors = validationResult(req);
