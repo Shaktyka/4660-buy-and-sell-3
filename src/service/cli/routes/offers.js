@@ -87,9 +87,9 @@ offersRouter.post(`/`, [
   check(`avatar`)
     .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
     .trim()
-    .escape(),
-  // .isIn(OfferRequirement.avatar.allowedType.VALUE)
-  // .withMessage(`${OfferRequirement.avatar.allowedType.ERROR_TEXT}`)
+    .escape()
+    .matches(`(?:jpg|jpeg|png)$`)
+    .withMessage(`${OfferRequirement.avatar.allowedType.ERROR_TEXT}`),
   check(`comment`)
     .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
     .trim()
