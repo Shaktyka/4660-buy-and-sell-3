@@ -3,6 +3,7 @@
 const {Router} = require(`express`);
 const offersRouter = new Router();
 const log = require(`../../../paint-log`).log;
+const {compareArrays} = require(`../../../utils`);
 const offers = require(`../models/offers`);
 const {check, validationResult} = require(`express-validator`);
 const asyncHandler = require(`express-async-handler`);
@@ -27,7 +28,7 @@ const REQUIRE_ERROR_TEXT = `Нужно заполнить поле`;
 
 const OfferRequirement = {
   avatar: {
-    allowedType: {
+    allowedExtentions: {
       VALUE: [`jpeg`, `jpg`, `png`],
       ERROR_TEXT: `Неразрешённый тип данных`
     }
@@ -65,14 +66,12 @@ const OfferRequirement = {
     }
   },
   category: {
-    allowedType: {
+    allowedEntries: {
       VALUE: [1, 2, 3, 4],
-      ERROR_TEXT: `Нужно выбрать 1 или более категорий`
+      ERROR_TEXT: `Выбраны некорректные значения категорий`
     }
   }
 };
-
-// //////////////// Доделать //////////////////////////////
 
 // Создаёт новое объявление
 offersRouter.post(`/`, [
@@ -89,7 +88,7 @@ offersRouter.post(`/`, [
     .trim()
     .escape()
     .matches(`(?:jpg|jpeg|png)$`)
-    .withMessage(`${OfferRequirement.avatar.allowedType.ERROR_TEXT}`),
+    .withMessage(`${OfferRequirement.avatar.allowedExtentions.ERROR_TEXT}`),
   check(`comment`)
     .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
     .trim()
@@ -109,13 +108,16 @@ offersRouter.post(`/`, [
     .trim()
     .escape()
     .isInt({min: 100})
-    .withMessage(`${OfferRequirement.price.minValue.ERROR_TEXT} ${OfferRequirement.price.minValue.VALUE}`)
-  // check(`category`)
-  //   .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
-  //   .trim()
-  //   .escape()
-  //   .isIn(OfferRequirement.category.allowedType.VALUE)
-  //   .withMessage(`${OfferRequirement.category.allowedType.ERROR_TEXT}`)
+    .withMessage(`${OfferRequirement.price.minValue.ERROR_TEXT} ${OfferRequirement.price.minValue.VALUE}`),
+  check(`category`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .custom((value) => {
+      const entryArray = compareArrays(value, OfferRequirement.category.allowedEntries.VALUE);
+      if (entryArray.length > 0) {
+        throw new Error(OfferRequirement.category.allowedEntries.ERROR_TEXT);
+      }
+      return true;
+    }),
 ], asyncHandler(async (req, res) => {
   const offerData = req.body;
   console.log(offerData);
@@ -138,6 +140,8 @@ offersRouter.post(`/`, [
     );
   }
 }));
+
+// //////////////// Доделать //////////////////////////////
 
 // Редактирует объявление по id
 offersRouter.put(`/:offerId`, asyncHandler(async (req, res) => {

@@ -13,6 +13,13 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+// Поиск вхождения одного массива в другой
+const compareArrays = (gotArr, targetArr) => {
+  return gotArr.filter((i) => {
+    return !(targetArr.indexOf(i) > -1);
+  });
+};
+
 // Перемешивание массива
 const shuffleArray = (someArray) => {
   for (let i = someArray.length - 1; i > 0; i--) {
@@ -57,5 +64,6 @@ module.exports = {
   getRandomInt,
   shuffleArray,
   readContent,
-  readFileData
+  readFileData,
+  compareArrays
 };
