@@ -6,6 +6,11 @@ const OFFERS_AMOUNT_MAX = 1000;
 const DEFAULT_SERVER_PORT = 3000;
 
 const OVERHEAD_MESSAGE = `Не больше 1000 объявлений`;
+const NO_ID_MESSAGE = `Не передан id`;
+const DATA_SENT_MESSAGE = `Данные отправлены`;
+const SERVER_ERROR_MESSAGE = `Ошибка сервера`;
+const EMPTY_REQUEST_MESSAGE = `Пустая строка запроса`;
+const BAD_REQUEST_MESSAGE = `Неверный запрос`;
 
 const ExitCode = {
   SUCCESS: 0,
@@ -23,13 +28,6 @@ const HttpCode = {
   UNPROCESSABLE_ENTITY: 422,
   INTERNAL_SERVER_ERROR: 500
 };
-
-const NO_ID_MESSAGE = `Не передан id`;
-
-const DATA_SENT_MESSAGE = `Данные отправлены`;
-const SERVER_ERROR_MESSAGE = `Ошибка сервера`;
-const EMPTY_REQUEST_MESSAGE = `Пустая строка запроса`;
-const MESSAGE_BAD_REQUEST = `Неверный запрос`;
 
 const ServerLogText = {
   ERROR: `Ошибка при создании сервера`,
@@ -57,7 +55,7 @@ module.exports = {
   DATA_SENT_MESSAGE,
   SERVER_ERROR_MESSAGE,
   EMPTY_REQUEST_MESSAGE,
-  MESSAGE_BAD_REQUEST,
+  BAD_REQUEST_MESSAGE,
   ResultMessage,
   NO_ID_MESSAGE
 };

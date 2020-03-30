@@ -12,7 +12,6 @@ const createError = require(`http-errors`);
 const {
   HttpCode,
   SERVER_ERROR_MESSAGE,
-  MESSAGE_BAD_REQUEST,
   ResultMessage,
   NO_ID_MESSAGE
 } = require(`../../../constants`);
@@ -20,6 +19,7 @@ const {
 const {
   CommentRequirement,
   REQUIRE_ERROR_TEXT,
+  BAD_REQUEST_MESSAGE,
   OfferRequirement
 } = require(`../../../validation`);
 
@@ -94,7 +94,7 @@ offersRouter.put(`/:offerId/comments`, [
   const {comment} = req.body;
 
   try {
-    const result = await offers.addComment(offerId, comment);
+    await offers.addComment(offerId, comment);
     log(ResultMessage.COMMENT_CREATED, `log`, `success`);
     return res.status(HttpCode.CREATED).send(ResultMessage.COMMENT_CREATED);
   } catch (err) {
@@ -262,7 +262,7 @@ offersRouter.delete(`/:offerId`, asyncHandler(async (req, res) => {
   }
 
   try {
-    const result = await offers.deleteOffer(offerId);
+    await offers.deleteOffer(offerId);
     log(ResultMessage.OFFER_DELETED, `log`, `success`);
     return res.status(HttpCode.NO_CONTENT).send(ResultMessage.OFFER_DELETED);
   } catch (err) {
@@ -281,12 +281,12 @@ offersRouter.delete(`/:offerId/comments/:commentId`, asyncHandler(async (req, re
   if (offerId.length === 0 || commentId === 0) {
     throw createError(
         HttpCode.BAD_REQUEST,
-        {message: MESSAGE_BAD_REQUEST}
+        {message: BAD_REQUEST_MESSAGE}
     );
   }
 
   try {
-    const result = await offers.deleteComment(offerId, commentId);
+    await offers.deleteComment(offerId, commentId);
     log(ResultMessage.COMMENT_DELETED, `log`, `success`);
     return res.status(HttpCode.NO_CONTENT).send(ResultMessage.COMMENT_DELETED);
   } catch (err) {
