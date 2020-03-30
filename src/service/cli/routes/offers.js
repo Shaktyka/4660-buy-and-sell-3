@@ -26,7 +26,7 @@ const {
 // Отдаёт список всех объявлений
 offersRouter.get(`/`, asyncHandler(async (req, res) => {
   try {
-    const result = await offers.getList();
+    const result = await offers.getAll();
     log(ResultMessage.DATA_SENT, `log`, `success`);
     res.json(result);
   } catch (err) {
@@ -69,7 +69,7 @@ offersRouter.get(`/:offerId/comments`, asyncHandler(async (req, res) => {
   }
 
   try {
-    const result = await offers.getOfferComments(offerId);
+    const result = await offers.getComments(offerId);
     log(ResultMessage.DATA_SENT, `log`, `success`);
     res.json(result);
   } catch (err) {

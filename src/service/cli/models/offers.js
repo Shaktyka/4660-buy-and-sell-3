@@ -8,7 +8,7 @@ const ID_SYMBOLS_AMOUNT = 6;
 
 const offers = {
   // Получаем весь список объявлений
-  getList: async () => {
+  getAll: async () => {
     const offersList = await readFileData(MOCKS_FILE);
     return offersList;
   },
@@ -16,7 +16,7 @@ const offers = {
   // Получаем объявление по id
   getOffer: async (id) => {
     let offer = null;
-    const offersList = await offers.getList();
+    const offersList = await offers.getAll();
     const parsedList = JSON.parse(offersList);
 
     for (let i = 0; i < parsedList.length; i++) {
@@ -28,30 +28,9 @@ const offers = {
     return offer;
   },
 
-  // Получаем список комментариев объявления по id
-  getOfferComments: async (id) => {
-    let comments = [];
-    const offer = await offers.getOffer(id);
-
-    if (offer.hasOwnProperty(`comments`)) {
-      comments = offer.comments;
-    }
-
-    return comments;
-  },
-
-  // Добавляем комментарий в объявление по id
-  addComment: async (id, comment) => {
-    const offer = await offers.getOffer(id);
-    if (offer) {
-      offer.comments.push({id: nanoid(ID_SYMBOLS_AMOUNT), text: comment});
-    }
-    return offer;
-  },
-
   // Добавляет новое объявление
   addOffer: async (offerData) => {
-    const offersList = await offers.getList();
+    const offersList = await offers.getAll();
     const parsedList = JSON.parse(offersList);
 
     const offerObject = offerData;
@@ -77,7 +56,7 @@ const offers = {
 
   // Удаляет объявление по id
   deleteOffer: async (id) => {
-    const offersList = await offers.getList();
+    const offersList = await offers.getAll();
     const parsedList = JSON.parse(offersList);
 
     const filteredList = parsedList.filter((offer) => {
@@ -85,6 +64,27 @@ const offers = {
     });
 
     return filteredList;
+  },
+
+  // Получаем список комментариев объявления по id
+  getComments: async (id) => {
+    let comments = [];
+    const offer = await offers.getOffer(id);
+
+    if (offer.hasOwnProperty(`comments`)) {
+      comments = offer.comments;
+    }
+
+    return comments;
+  },
+
+  // Добавляем комментарий в объявление по id
+  addComment: async (id, comment) => {
+    const offer = await offers.getOffer(id);
+    if (offer) {
+      offer.comments.push({id: nanoid(ID_SYMBOLS_AMOUNT), text: comment});
+    }
+    return offer;
   },
 
   // Удаляет комментарий по id в объявлении id
