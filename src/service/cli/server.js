@@ -4,19 +4,12 @@ const express = require(`express`);
 const apiRouter = require(`./routes/api`);
 const createError = require(`http-errors`);
 const {ServerLogText, HttpCode} = require(`../../constants`);
-// const formidableMiddleware = require(`express-formidable`);
 
 const DEFAULT_PORT = 3000;
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
-
-// app.use(formidableMiddleware({
-//   encoding: `utf-8`,
-//   uploadDir: `./tmp`,
-//   multiples: false,
-// }));
 
 app.use(`/api`, apiRouter);
 

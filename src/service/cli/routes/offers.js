@@ -23,145 +23,6 @@ const {
   OfferRequirement
 } = require(`../../../validation`);
 
-// Создаёт новое объявление
-offersRouter.post(`/`, [
-  check(`ticket-name`)
-    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
-    .trim()
-    .escape()
-    .isLength({min: OfferRequirement.ticketName.minLength.VALUE})
-    .withMessage(`${OfferRequirement.ticketName.minLength.ERROR_TEXT} ${OfferRequirement.ticketName.minLength.VALUE}`)
-    .isLength({max: OfferRequirement.ticketName.maxLength.VALUE})
-    .withMessage(`${OfferRequirement.ticketName.maxLength.ERROR_TEXT} ${OfferRequirement.ticketName.maxLength.VALUE}`),
-  check(`avatar`)
-    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
-    .trim()
-    .escape()
-    .matches(`(?:jpg|jpeg|png)$`)
-    .withMessage(`${OfferRequirement.avatar.allowedExtentions.ERROR_TEXT}`),
-  check(`comment`)
-    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
-    .trim()
-    .escape()
-    .isLength({min: OfferRequirement.comment.minLength.VALUE})
-    .withMessage(`${OfferRequirement.comment.minLength.ERROR_TEXT} ${OfferRequirement.comment.minLength.VALUE}`)
-    .isLength({max: OfferRequirement.comment.maxLength.VALUE})
-    .withMessage(`${OfferRequirement.comment.maxLength.ERROR_TEXT} ${OfferRequirement.comment.maxLength.VALUE}`),
-  check(`action`)
-    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
-    .trim()
-    .escape()
-    .isIn(OfferRequirement.action.allowedType.VALUE)
-    .withMessage(`${OfferRequirement.action.allowedType.ERROR_TEXT}`),
-  check(`price`)
-    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
-    .trim()
-    .escape()
-    .isInt({min: OfferRequirement.price.minValue.VALUE})
-    .withMessage(`${OfferRequirement.price.minValue.ERROR_TEXT} ${OfferRequirement.price.minValue.VALUE}`),
-  check(`category`)
-    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
-    .custom((value) => {
-      const entryArray = compareArrays(value, OfferRequirement.category.allowedEntries.VALUE);
-      if (entryArray.length > 0) {
-        throw new Error(OfferRequirement.category.allowedEntries.ERROR_TEXT);
-      }
-      return true;
-    }),
-], asyncHandler(async (req, res) => {
-  const offerData = req.body;
-
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(HttpCode.BAD_REQUEST).json({errors: errors.array()});
-  }
-
-  try {
-    await offers.addOffer(offerData);
-    log(ResultMessage.OFFER_CREATED, `log`, `success`);
-    return res.status(HttpCode.CREATED).send(`Объявление добавлено`);
-  } catch (err) {
-    log(err, `error`, `error`);
-    throw createError(
-        HttpCode.INTERNAL_SERVER_ERROR,
-        {message: err.message}
-    );
-  }
-}));
-
-// Редактирует объявление по id
-offersRouter.put(`/:offerId`, [
-  check(`ticket-name`)
-    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
-    .trim()
-    .escape()
-    .isLength({min: OfferRequirement.ticketName.minLength.VALUE})
-    .withMessage(`${OfferRequirement.ticketName.minLength.ERROR_TEXT} ${OfferRequirement.ticketName.minLength.VALUE}`)
-    .isLength({max: OfferRequirement.ticketName.maxLength.VALUE})
-    .withMessage(`${OfferRequirement.ticketName.maxLength.ERROR_TEXT} ${OfferRequirement.ticketName.maxLength.VALUE}`),
-  check(`avatar`)
-    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
-    .trim()
-    .escape()
-    .matches(`(?:jpg|jpeg|png)$`)
-    .withMessage(`${OfferRequirement.avatar.allowedExtentions.ERROR_TEXT}`),
-  check(`comment`)
-    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
-    .trim()
-    .escape()
-    .isLength({min: OfferRequirement.comment.minLength.VALUE})
-    .withMessage(`${OfferRequirement.comment.minLength.ERROR_TEXT} ${OfferRequirement.comment.minLength.VALUE}`)
-    .isLength({max: OfferRequirement.comment.maxLength.VALUE})
-    .withMessage(`${OfferRequirement.comment.maxLength.ERROR_TEXT} ${OfferRequirement.comment.maxLength.VALUE}`),
-  check(`action`)
-    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
-    .trim()
-    .escape()
-    .isIn(OfferRequirement.action.allowedType.VALUE)
-    .withMessage(`${OfferRequirement.action.allowedType.ERROR_TEXT}`),
-  check(`price`)
-    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
-    .trim()
-    .escape()
-    .isInt({min: OfferRequirement.price.minValue.VALUE})
-    .withMessage(`${OfferRequirement.price.minValue.ERROR_TEXT} ${OfferRequirement.price.minValue.VALUE}`),
-  check(`category`)
-    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
-    .custom((value) => {
-      const entryArray = compareArrays(value, OfferRequirement.category.allowedEntries.VALUE);
-      if (entryArray.length > 0) {
-        throw new Error(OfferRequirement.category.allowedEntries.ERROR_TEXT);
-      }
-      return true;
-    }),
-], asyncHandler(async (req, res) => {
-  const offerId = req.params.offerId.trim();
-  if (offerId.length === 0) {
-    throw createError(
-        HttpCode.BAD_REQUEST,
-        {message: NO_ID_MESSAGE}
-    );
-  }
-
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(HttpCode.BAD_REQUEST).json({errors: errors.array()});
-  }
-
-  try {
-    const offerData = req.body;
-    await offers.updateOffer(offerId, offerData);
-    log(ResultMessage.OFFER_UPDATED, `log`, `success`);
-    return res.status(HttpCode.CREATED).send(`Объявление обновлено`);
-  } catch (err) {
-    log(err, `error`, `error`);
-    throw createError(
-        HttpCode.INTERNAL_SERVER_ERROR,
-        {message: err.message}
-    );
-  }
-}));
-
 // Отдаёт список всех объявлений
 offersRouter.get(`/`, asyncHandler(async (req, res) => {
   try {
@@ -235,12 +96,157 @@ offersRouter.put(`/:offerId/comments`, [
   try {
     const result = await offers.addComment(offerId, comment);
     log(ResultMessage.COMMENT_CREATED, `log`, `success`);
-    return res.json(result);
+    return res.status(HttpCode.CREATED).send(ResultMessage.COMMENT_CREATED);
   } catch (err) {
     log(err, `error`, `error`);
     throw createError(
         HttpCode.INTERNAL_SERVER_ERROR,
         {message: SERVER_ERROR_MESSAGE}
+    );
+  }
+}));
+
+// Создаёт новое объявление
+offersRouter.post(`/`, [
+  check(`ticket-name`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .trim()
+    .escape()
+    .isLength({min: OfferRequirement.ticketName.minLength.VALUE})
+    .withMessage(`${OfferRequirement.ticketName.minLength.ERROR_TEXT} ${OfferRequirement.ticketName.minLength.VALUE}`)
+    .isLength({max: OfferRequirement.ticketName.maxLength.VALUE})
+    .withMessage(`${OfferRequirement.ticketName.maxLength.ERROR_TEXT} ${OfferRequirement.ticketName.maxLength.VALUE}`),
+  check(`avatar`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .trim()
+    .escape()
+    .matches(`(?:jpg|jpeg|png)$`)
+    .withMessage(`${OfferRequirement.avatar.allowedExtentions.ERROR_TEXT}`),
+  check(`comment`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .trim()
+    .escape()
+    .isLength({min: OfferRequirement.comment.minLength.VALUE})
+    .withMessage(`${OfferRequirement.comment.minLength.ERROR_TEXT} ${OfferRequirement.comment.minLength.VALUE}`)
+    .isLength({max: OfferRequirement.comment.maxLength.VALUE})
+    .withMessage(`${OfferRequirement.comment.maxLength.ERROR_TEXT} ${OfferRequirement.comment.maxLength.VALUE}`),
+  check(`action`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .trim()
+    .escape()
+    .isIn(OfferRequirement.action.allowedType.VALUE)
+    .withMessage(`${OfferRequirement.action.allowedType.ERROR_TEXT}`),
+  check(`price`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .trim()
+    .escape()
+    .isInt({min: OfferRequirement.price.minValue.VALUE})
+    .withMessage(`${OfferRequirement.price.minValue.ERROR_TEXT} ${OfferRequirement.price.minValue.VALUE}`),
+  check(`category`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .custom((value) => {
+      const entryArray = compareArrays(value, OfferRequirement.category.allowedEntries.VALUE);
+      if (entryArray.length > 0) {
+        throw createError(
+            HttpCode.UNPROCESSABLE_ENTITY,
+            {message: OfferRequirement.category.allowedEntries.ERROR_TEXT}
+        );
+      }
+      return true;
+    }),
+], asyncHandler(async (req, res) => {
+  const offerData = req.body;
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(HttpCode.BAD_REQUEST).json({errors: errors.array()});
+  }
+
+  try {
+    await offers.addOffer(offerData);
+    log(ResultMessage.OFFER_CREATED, `log`, `success`);
+    return res.status(HttpCode.CREATED).send(ResultMessage.OFFER_CREATED);
+  } catch (err) {
+    log(err, `error`, `error`);
+    throw createError(
+        HttpCode.INTERNAL_SERVER_ERROR,
+        {message: err.message}
+    );
+  }
+}));
+
+// Редактирует объявление по id
+offersRouter.put(`/:offerId`, [
+  check(`ticket-name`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .trim()
+    .escape()
+    .isLength({min: OfferRequirement.ticketName.minLength.VALUE})
+    .withMessage(`${OfferRequirement.ticketName.minLength.ERROR_TEXT} ${OfferRequirement.ticketName.minLength.VALUE}`)
+    .isLength({max: OfferRequirement.ticketName.maxLength.VALUE})
+    .withMessage(`${OfferRequirement.ticketName.maxLength.ERROR_TEXT} ${OfferRequirement.ticketName.maxLength.VALUE}`),
+  check(`avatar`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .trim()
+    .escape()
+    .matches(`(?:jpg|jpeg|png)$`)
+    .withMessage(`${OfferRequirement.avatar.allowedExtentions.ERROR_TEXT}`),
+  check(`comment`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .trim()
+    .escape()
+    .isLength({min: OfferRequirement.comment.minLength.VALUE})
+    .withMessage(`${OfferRequirement.comment.minLength.ERROR_TEXT} ${OfferRequirement.comment.minLength.VALUE}`)
+    .isLength({max: OfferRequirement.comment.maxLength.VALUE})
+    .withMessage(`${OfferRequirement.comment.maxLength.ERROR_TEXT} ${OfferRequirement.comment.maxLength.VALUE}`),
+  check(`action`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .trim()
+    .escape()
+    .isIn(OfferRequirement.action.allowedType.VALUE)
+    .withMessage(`${OfferRequirement.action.allowedType.ERROR_TEXT}`),
+  check(`price`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .trim()
+    .escape()
+    .isInt({min: OfferRequirement.price.minValue.VALUE})
+    .withMessage(`${OfferRequirement.price.minValue.ERROR_TEXT} ${OfferRequirement.price.minValue.VALUE}`),
+  check(`category`)
+    .not().isEmpty().withMessage(REQUIRE_ERROR_TEXT)
+    .custom((value) => {
+      const entryArray = compareArrays(value, OfferRequirement.category.allowedEntries.VALUE);
+      if (entryArray.length > 0) {
+        throw createError(
+            HttpCode.UNPROCESSABLE_ENTITY,
+            {message: OfferRequirement.category.allowedEntries.ERROR_TEXT}
+        );
+      }
+      return true;
+    }),
+], asyncHandler(async (req, res) => {
+  const offerId = req.params.offerId.trim();
+  if (offerId.length === 0) {
+    throw createError(
+        HttpCode.BAD_REQUEST,
+        {message: NO_ID_MESSAGE}
+    );
+  }
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(HttpCode.BAD_REQUEST).json({errors: errors.array()});
+  }
+
+  try {
+    const offerData = req.body;
+    await offers.updateOffer(offerId, offerData);
+    log(ResultMessage.OFFER_UPDATED, `log`, `success`);
+    return res.status(HttpCode.NO_CONTENT).send(ResultMessage.OFFER_UPDATED);
+  } catch (err) {
+    log(err, `error`, `error`);
+    throw createError(
+        HttpCode.INTERNAL_SERVER_ERROR,
+        {message: err.message}
     );
   }
 }));
@@ -258,7 +264,7 @@ offersRouter.delete(`/:offerId`, asyncHandler(async (req, res) => {
   try {
     const result = await offers.deleteOffer(offerId);
     log(ResultMessage.OFFER_DELETED, `log`, `success`);
-    res.json(result);
+    return res.status(HttpCode.NO_CONTENT).send(ResultMessage.OFFER_DELETED);
   } catch (err) {
     log(err, `error`, `error`);
     throw createError(
@@ -282,7 +288,7 @@ offersRouter.delete(`/:offerId/comments/:commentId`, asyncHandler(async (req, re
   try {
     const result = await offers.deleteComment(offerId, commentId);
     log(ResultMessage.COMMENT_DELETED, `log`, `success`);
-    res.json(result);
+    return res.status(HttpCode.NO_CONTENT).send(ResultMessage.COMMENT_DELETED);
   } catch (err) {
     log(err, `error`, `error`);
     throw createError(

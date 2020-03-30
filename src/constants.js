@@ -5,9 +5,7 @@ const USER_ARGV_INDEX = 2;
 const OFFERS_AMOUNT_MAX = 1000;
 const DEFAULT_SERVER_PORT = 3000;
 
-const Message = {
-  OVERHEAD: `Не больше 1000 объявлений`
-};
+const OVERHEAD_MESSAGE = `Не больше 1000 объявлений`;
 
 const ExitCode = {
   SUCCESS: 0,
@@ -22,6 +20,7 @@ const HttpCode = {
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
+  UNPROCESSABLE_ENTITY: 422,
   INTERNAL_SERVER_ERROR: 500
 };
 
@@ -38,12 +37,12 @@ const ServerLogText = {
 };
 
 const ResultMessage = {
-  COMMENT_DELETED: `Комментарий удалён`,
-  OFFER_DELETED: `Объявление удалено`,
-  OFFER_UPDATED: `Объявление отредактировано`,
   COMMENT_CREATED: `Комментарий добавлен`,
-  DATA_SENT: `Данные отправлены`,
-  OFFER_CREATED: `Объявление добавлено`
+  COMMENT_DELETED: `Комментарий удалён`,
+  OFFER_CREATED: `Объявление добавлено`,
+  OFFER_UPDATED: `Объявление обновлено`,
+  OFFER_DELETED: `Объявление удалено`,
+  DATA_SENT: `Данные отправлены`
 };
 
 module.exports = {
@@ -52,7 +51,7 @@ module.exports = {
   OFFERS_AMOUNT_MAX,
   DEFAULT_SERVER_PORT,
   ExitCode,
-  Message,
+  OVERHEAD_MESSAGE,
   HttpCode,
   ServerLogText,
   DATA_SENT_MESSAGE,

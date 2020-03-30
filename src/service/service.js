@@ -8,7 +8,7 @@ const {
   USER_ARGV_INDEX,
   OFFERS_AMOUNT_MAX,
   ExitCode,
-  Message
+  OVERHEAD_MESSAGE
 } = require(`../constants.js`);
 
 const userArguments = process.argv.slice(USER_ARGV_INDEX);
@@ -22,7 +22,7 @@ if (userArguments.length === 0 || !Cli[userCommand]) {
 }
 
 if (userCommand === `--generate` && amountParam > OFFERS_AMOUNT_MAX) {
-  log(Message.OVERHEAD, `info`, `error`);
+  log(OVERHEAD_MESSAGE, `info`, `error`);
   process.exit(ExitCode.ERROR);
 }
 
