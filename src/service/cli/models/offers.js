@@ -15,7 +15,7 @@ const offers = {
 
   // Получаем объявление по id
   getOffer: async (id) => {
-    let offer = {};
+    let offer = null;
     const offersList = await offers.getList();
     const parsedList = JSON.parse(offersList);
 
@@ -43,7 +43,6 @@ const offers = {
   // Добавляем комментарий в объявление по id
   addComment: async (id, comment) => {
     const offer = await offers.getOffer(id);
-    // console.log(offer);
     if (offer) {
       offer.comments.push({id: nanoid(ID_SYMBOLS_AMOUNT), text: comment});
     }

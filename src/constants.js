@@ -40,7 +40,8 @@ const ResultMessage = {
   OFFER_CREATED: `Объявление добавлено`,
   OFFER_UPDATED: `Объявление обновлено`,
   OFFER_DELETED: `Объявление удалено`,
-  DATA_SENT: `Данные отправлены`
+  DATA_SENT: `Данные отправлены`,
+  NOT_FOUND: `Объект не найден`
 };
 
 module.exports = {

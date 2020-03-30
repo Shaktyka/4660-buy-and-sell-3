@@ -94,9 +94,14 @@ offersRouter.put(`/:offerId/comments`, [
   const {comment} = req.body;
 
   try {
-    await offers.addComment(offerId, comment);
-    log(ResultMessage.COMMENT_CREATED, `log`, `success`);
-    return res.status(HttpCode.CREATED).send(ResultMessage.COMMENT_CREATED);
+    const result = await offers.addComment(offerId, comment);
+    if (result) {
+      log(ResultMessage.COMMENT_CREATED, `log`, `success`);
+      return res.status(HttpCode.CREATED).send(ResultMessage.COMMENT_CREATED);
+    } else {
+      log(ResultMessage.NOT_FOUND, `error`, `error`);
+      return res.status(HttpCode.NOT_FOUND).send(ResultMessage.NOT_FOUND);
+    }
   } catch (err) {
     log(err, `error`, `error`);
     throw createError(
