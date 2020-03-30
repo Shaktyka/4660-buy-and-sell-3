@@ -42,8 +42,13 @@ offersRouter.get(`/:offerId`, asyncHandler(async (req, res) => {
   try {
     const offerId = req.params.offerId.trim();
     const result = await offers.getOffer(offerId);
-    log(ResultMessage.DATA_SENT, `log`, `success`);
-    return res.json(result);
+    if (result) {
+      log(ResultMessage.DATA_SENT, `log`, `success`);
+      return res.json(result);
+    } else {
+      log(ResultMessage.NOT_FOUND, `error`, `error`);
+      return res.status(HttpCode.NOT_FOUND).send(ResultMessage.NOT_FOUND);
+    }
   } catch (err) {
     log(err, `error`, `error`);
     throw createError(
