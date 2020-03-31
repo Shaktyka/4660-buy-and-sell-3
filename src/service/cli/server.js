@@ -1,58 +1,31 @@
 'use strict';
 
 const express = require(`express`);
-const fs = require(`fs`).promises;
-const log = require(`../../paint-log.js`).log;
+const apiRouter = require(`./routes/api`);
+const createError = require(`http-errors`);
+const {ServerLogText, HttpCode} = require(`../../constants`);
 
 const DEFAULT_PORT = 3000;
-const MOCKS_FILE = `mocks.json`;
-const NOT_FOUND_MESSAGE = `Файл ${MOCKS_FILE} не найден`;
-const EMPTY_FILE_MESSAGE = `Файл ${MOCKS_FILE} пустой`;
-const DATA_SENT_MESSAGE = `Данные отправлены`;
-
-const ServerLogText = {
-  ERROR: `Ошибка при создании сервера`,
-  CONNECT: `Ожидаю соединений на порту`
-};
 
 const app = express();
-const {Router} = require(`express`);
-const router = new Router();
-
 app.use(express.json());
-app.use(`/offers`, router);
+app.use(express.urlencoded({extended: false}));
 
-const readMockData = async () => {
-  let data = [];
+app.use(`/api`, apiRouter);
 
-  try {
-    data = await fs.readFile(MOCKS_FILE, `utf8`);
-    if (data === ``) {
-      data = [];
-      log(EMPTY_FILE_MESSAGE, `error`, `error`);
-    }
-  } catch (err) {
-    if (err.code === `ENOENT`) {
-      log(NOT_FOUND_MESSAGE, `error`, `error`);
-    } else {
-      log(err, `error`, `error`);
-    }
+app.use((req, res, next) => {
+  next(createError(HttpCode.NOT_FOUND, `Not found`));
+});
+
+app.use((err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err);
   }
-
-  return data;
-};
-
-router.use(`/`, (req, res) => {
-  const result = readMockData();
-
-  if (result instanceof Promise) {
-    result
-      .then((data) => {
-        res.json(data);
-        log(DATA_SENT_MESSAGE, `log`, `success`);
-      })
-      .catch((err) => log(err, `error`, `error`));
-  }
+  res.status(err.status || HttpCode.INTERNAL_SERVER_ERROR);
+  return res.json({
+    status: err.status,
+    message: err.message
+  });
 });
 
 module.exports = {

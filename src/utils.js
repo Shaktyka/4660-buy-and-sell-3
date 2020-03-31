@@ -3,11 +3,21 @@
 const log = require(`./paint-log.js`).log;
 const fs = require(`fs`).promises;
 
+const NOT_FOUND_MESSAGE = `Файл не найден`;
+const EMPTY_FILE_MESSAGE = `Файл пустой`;
+
 // Генерация рандомных чисел
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+// Поиск вхождения одного массива в другой
+const compareArrays = (gotArr, targetArr) => {
+  return gotArr.filter((i) => {
+    return !(targetArr.indexOf(i) > -1);
+  });
 };
 
 // Перемешивание массива
@@ -30,8 +40,30 @@ const readContent = async (filePath) => {
   }
 };
 
+const readFileData = (fileName) => {
+  let data = [];
+
+  try {
+    data = fs.readFile(fileName, `utf8`);
+    if (data === ``) {
+      data = [];
+      log(EMPTY_FILE_MESSAGE, `error`, `error`);
+    }
+  } catch (err) {
+    if (err.code === `ENOENT`) {
+      log(NOT_FOUND_MESSAGE, `error`, `error`);
+    } else {
+      log(err, `error`, `error`);
+    }
+  }
+
+  return data;
+};
+
 module.exports = {
   getRandomInt,
   shuffleArray,
-  readContent
+  readContent,
+  readFileData,
+  compareArrays
 };
